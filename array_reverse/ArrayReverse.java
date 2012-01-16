@@ -1,4 +1,5 @@
 // Chris Campo
+// COP 3503C - 0001
 // HW 1 - Array Reversal
 // 1/16/2012
 
@@ -11,13 +12,16 @@ public class ArrayReverse {
         int n         = 10;           // array size
         int[] randarr = new int[n];   // array to be filled w/ random numbers
         
+        System.out.println("Chris Campo (ch632561): COP 3503 - Assignment 1");
         populateArray(randarr);
         
-        System.out.println(Arrays.toString(randarr));
-        
+        System.out.print("Input: ");
+        printArray(randarr);
+
         reverseArray(randarr);
         
-        System.out.println(Arrays.toString(randarr));
+        System.out.print("Output: ");
+        printArray(randarr);
 
     }
     
@@ -35,7 +39,7 @@ public class ArrayReverse {
     // reverses elements of given array
     private static void reverseArray(int[] arr)
     {
-        // make a copy to hold the original values
+        // to hold the original array values, we make a copy
         int[] temparr = new int[arr.length];
         System.arraycopy(arr, 0, temparr, 0, arr.length);
         
@@ -46,7 +50,9 @@ public class ArrayReverse {
     }
     
     // prints elements of array
-    private static void printArray()
+    private static void printArray(int[] arr)
     {
+        System.out.println(Arrays.toString(arr));
     }
+    
 }
