@@ -1,0 +1,59 @@
+Array Reversal - Written Portion:
+---------------------------------
+Assignment status: complete
+
+################
+# Input/Output #
+################
+
+Chris Campo (ch632561): COP 3503 - Assignment 1
+Input:   [25, 6, 51, 48, 36, 47, 44, 40, 65, 80]
+Output:  [80, 65, 40, 44, 47, 36, 48, 51, 6, 25]
+
+###############
+# Pseudo-code #
+###############
+
+function main()
+    size = 10   # array size
+    arr  = new int[size]
+    print("Chris Campo (ch632561): COP 3503 - Assignment 1\n")
+    
+    populateArray(arr)
+    
+    print("Input: ")
+    printArray(arr)
+    
+    reverseArray(arr)
+    
+    print("Output: ")
+    printArray(arr)
+   
+
+function populateArray(array):
+    topbound = 100  # arbitrary upper bound for rng
+    for i in range(array.length):
+        array[i] = randomInt(topbound)
+        
+function reverseArray(array):
+    istart = 0
+    iend   = array.length - 1
+    while(istart < iend):
+        swap(array, istart, iend)
+        istart++
+        iend--
+
+function swap(array, istart, iend):
+    tmp           = array[istart]
+    array[istart] = array[iend]
+    array[iend]   = tmp
+        
+function printArray(array):
+    arrstr = array.toString() # string representation of array
+    print(arrstr)
+    
+    # IF toString method does not exist (it does in Java)
+    print("[ ")
+    for num in array: print("%d ", num)
+    print(" ]\n")
+ 
