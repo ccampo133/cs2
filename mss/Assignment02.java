@@ -41,18 +41,17 @@ public class Assignment02
     {
         int maxsum = 0;
         int sum    = 0;
-        int j      = 0;
-        for(int i = 0; i < N; i++){
-            sum += arr[i];
+        int i      = 0;
+        for(int j = 0; j < N; j++){
+            sum += arr[j];
             if(sum > maxsum){ 
                 maxsum = sum;
-                j += i;
-                ij[1] = i;
-                ij[0] = j - i;
+                ij[0] = i;
+                ij[1] = j;
             }
             else if(sum < 0){
                 sum = 0;
-                j   = 0;
+                i   = j + 1;
             }
         }
         return maxsum;
