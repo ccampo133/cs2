@@ -9,15 +9,20 @@ public class Assignment02
 {
     public static void main(String[] args)
     {
-        int n     = 5;
+        int n     = 7;
         int[] ij  = new int[2];
-        //int[] arr = new int[n]; 
-        //populateArray(arr);
-        int[] arr = {-2, 11, -4, 13, -5, -2};
-        int sum = mssLinear(arr, n);
-        System.out.format("%d\n", sum);
-        int foo = mssQuadratic(arr, n);
-        System.out.format("%d\n", foo);
+        int[] jk  = new int[2];
+        int[] lm  = new int[2];
+        int[] arr = new int[n]; 
+        //int[] arr = {11, 14, -3, 0, 10};
+        populateArray(arr);
+        System.out.println(Arrays.toString(arr));
+        int cat = mssLinear(arr, n, lm);
+        System.out.format("%d i = %d  j = %d\n", cat, lm[0], lm[1]);
+        int foo = mssQuadratic(arr, n, jk);
+        System.out.format("%d i = %d  j = %d\n", foo, jk[0], jk[1]);
+        int bar = mssCubic(arr, n, ij);
+        System.out.format("%d i = %d  j = %d\n", bar, ij[0], ij[1]);
     }
     
     // populates array with n random numbers
@@ -31,33 +36,74 @@ public class Assignment02
         }
     }
     
-    public static int mssQuadratic(int[] arr, int N)
+    // linear maximum subsequence sum (mss) algorithm
+    public static int mssLinear(int[] arr, int N, int[] ij)
+    {
+        int maxsum = 0;
+        int sum    = 0;
+        int j      = 0;
+        for(int i = 0; i < N; i++){
+            sum += arr[i];
+            if(sum > maxsum){ 
+                maxsum = sum;
+                j += i;
+                ij[1] = i;
+                ij[0] = j - i;
+            }
+            else if(sum < 0){
+                sum = 0;
+                j   = 0;
+            }
+        }
+        return maxsum;
+    }
+    
+    // quadratic mss algorithm
+    public static int mssQuadratic(int[] arr, int N, int[] ij)
     {
         int maxsum = 0;
         for(int i = 0; i < N; i++){
             int sum = 0;
             for(int j = i; j < N; j++){
                 sum += arr[j];
-                if(sum > maxsum){ maxsum = sum; }
+                if(sum > maxsum){ 
+                    maxsum = sum;
+                    ij[0]  = i;
+                    ij[1]  = j;
+                }
             }
         }
         return maxsum;
     }
     
-    // linear maximum subsequence sum (mss) algorithm
-    public static int mssLinear(int[] arr, int N)
+    // cubic mss algorithm
+    public static int mssCubic(int[] arr, int N, int[] ij)
     {
         int maxsum = 0;
         int sum    = 0;
         for(int i = 0; i < N; i++){
-            sum += arr[i];
-            if(sum > maxsum){ 
-                maxsum = sum;
-            }
-            else if(sum < 0){
-                sum    = 0;
+            for(int j = i; j < N; j++){
+                sum = 0;
+                for(int k = i; k <= j; k++){
+                    sum += arr[k];
+                }
+                if(sum > maxsum){
+                    maxsum = sum;
+                    ij[0] = i;
+                    ij[1] = j;
+                }
             }
         }
         return maxsum;
+    }
+    
+    // helper method for mssCubic
+    public static int subseqSum(int[] arr, int i, int j)
+    {
+        int sum = 0;
+        for(int k = i; k <= j; k++){
+            sum += arr[k];
+        }
+        return sum;
     }
 }
