@@ -9,22 +9,64 @@ public class Assignment02
 {
     public static void main(String[] args)
     {
-        int n     = 7;
-        int[] ij  = new int[2];
-        int[] jk  = new int[2];
-        int[] lm  = new int[2];
-        int[] arr = new int[n]; 
-        //int[] arr = {11, 14, -3, 0, 10};
-        populateArray(arr);
-        System.out.println(Arrays.toString(arr));
-        int cat = mssLinear(arr, n, lm);
-        System.out.format("%d i = %d  j = %d\n", cat, lm[0], lm[1]);
-        int foo = mssQuadratic(arr, n, jk);
-        System.out.format("%d i = %d  j = %d\n", foo, jk[0], jk[1]);
-        int bar = mssCubic(arr, n, ij);
-        System.out.format("%d i = %d  j = %d\n", bar, ij[0], ij[1]);
+        int[] N      = {10, 100, 1000, 10000, 100000, 1000000, 10000000};
+        int[] linij  = new int[2];
+        int[] qdij   = new int[2];
+        int[] cuij   = new int[2];
+        for(int i = 0; i < N.length; i++){
+            int n = N[i];
+            int[] arr  = new int[n]; 
+            populateArray(arr);
+            
+            long tstart1 = System.nanoTime();
+            int linsum   = mssLinear(arr, n, linij);
+            long dt      = (System.nanoTime() - tstart1);
+            double tlin  = (double)dt*1e-6;
+            
+            // can't define these in an if statement, so do it out here.
+            int qdsum  = -1;
+            double tqd = -1;
+              
+            // don't run the algorithms for big N (takes too long)
+            if (n < 1e6){
+                long tstart2 = System.nanoTime();
+                qdsum        = mssQuadratic(arr, n, qdij);
+                dt           = (System.nanoTime() - tstart2);
+                tqd          = (double)dt*1e-6;
+            }
+            else{
+                tqd     =  -1.0;
+                qdsum   =  -1;
+                qdij[0] = -1;
+                qdij[1] = -1;
+            }
+            
+            // define these out here because java is stupid and wont let you define them in an if statement.
+            int cusum  = -1;
+            double tcu = -1;
+            
+            // another check to stop running for N >> 1
+            if(n < 1e4){    
+                long tstart3 = System.nanoTime();
+                cusum        = mssCubic(arr, n, cuij);
+                dt           = (System.nanoTime() - tstart3);
+                tcu          = (double)dt*1e-6;
+            }
+            else{
+                tcu     = -1.0;
+                cusum   = -1;
+                cuij[0] = -1;
+                cuij[1] = -1;
+            }
+            
+            System.out.println("Chris Campo (ch632561): COP 3503 - Assignment 2");
+            System.out.format("N = %d\t", n);
+            System.out.format("[%f, %d, %d, %d]\t", tlin, linsum, linij[0], linij[1]);
+            System.out.format("[%f, %d, %d, %d]\t", tqd, qdsum, qdij[0], qdij[1]);
+            System.out.format("[%f, %d, %d, %d]\n", tcu, cusum, cuij[0], cuij[1]);
+        }
     }
-    
+       
     // populates array with n random numbers
     public static void populateArray(int[] arr)
     {
@@ -94,5 +136,12 @@ public class Assignment02
             }
         }
         return maxsum;
+    }
+    
+    public static void printSequence(int[] arr, int i, int j)
+    {
+        for(int k = i; k <= j; k++){
+            System.out.format("%d ", arr[k]);
+        }
     }
 }
