@@ -96,14 +96,4 @@ public class Assignment02
         }
         return maxsum;
     }
-    
-    // helper method for mssCubic
-    public static int subseqSum(int[] arr, int i, int j)
-    {
-        int sum = 0;
-        for(int k = i; k <= j; k++){
-            sum += arr[k];
-        }
-        return sum;
-    }
 }
