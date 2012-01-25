@@ -9,19 +9,41 @@ public class Assignment02
 {
     public static void main(String[] args)
     {
-        int[] N      = {10, 100, 1000, 10000, 100000, 1000000, 10000000};
+        // the sizes of the sequences
+        int[] N = {
+                   10, 
+                   100, 
+                   1000, 
+                   10000, 
+                   100000, 
+                   1000000, 
+                   10000000,
+                   100000000,
+                   };
+        
+        // arrays to store indices because Java is pass by value.
         int[] linij  = new int[2];
         int[] qdij   = new int[2];
         int[] cuij   = new int[2];
+        
+        System.out.println("Chris Campo (ch632561): COP 3503 - Assignment 2\n");
+        
+        // loop because we need to calculate for multiple val of N
         for(int i = 0; i < N.length; i++){
-            int n = N[i];
+            int n      = N[i];
+            System.out.printf ("N = %-10d\n", n);
+            System.out.println("==============");
+            
             int[] arr  = new int[n]; 
             populateArray(arr);
             
+            // analysis for linear algorithm
             long tstart1 = System.nanoTime();
             int linsum   = mssLinear(arr, n, linij);
             long dt      = (System.nanoTime() - tstart1);
             double tlin  = (double)dt*1e-6;
+            
+            System.out.printf("%-12s time (ms) = %-12f sum = %-10d i = %-10d j = %-10d\n", "LINEAR:", tlin, linsum, linij[0], linij[1]);
             
             // can't define these in an if statement, so do it out here.
             int qdsum  = -1;
@@ -33,12 +55,10 @@ public class Assignment02
                 qdsum        = mssQuadratic(arr, n, qdij);
                 dt           = (System.nanoTime() - tstart2);
                 tqd          = (double)dt*1e-6;
+                System.out.printf("%-12s time (ms) = %-12f sum = %-10d i = %-10d j = %-10d\n", "QUADRATIC:", tqd, qdsum, qdij[0], qdij[1]);
             }
             else{
-                tqd     =  -1.0;
-                qdsum   =  -1;
-                qdij[0] = -1;
-                qdij[1] = -1;
+                System.out.printf("%-12s time (ms) = %-12s sum = %-10s i = %-10s j = %-10s\n", "QUADRATIC:", "NA", "NA", "NA", "NA");
             }
             
             // define these out here because java is stupid and wont let you define them in an if statement.
@@ -51,20 +71,13 @@ public class Assignment02
                 cusum        = mssCubic(arr, n, cuij);
                 dt           = (System.nanoTime() - tstart3);
                 tcu          = (double)dt*1e-6;
+                System.out.printf("%-12s time (ms) = %-12f sum = %-10d i = %-10d j = %-10d\n", "CUBIC:", tcu, cusum, cuij[0], cuij[1]);
             }
             else{
-                tcu     = -1.0;
-                cusum   = -1;
-                cuij[0] = -1;
-                cuij[1] = -1;
+                System.out.printf("%-12s time (ms) = %-12s sum = %-10s i = %-10s j = %-10s\n", "CUBIC:", "NA", "NA", "NA", "NA");
             }
-            
-            System.out.println("Chris Campo (ch632561): COP 3503 - Assignment 2");
-            System.out.format("N = %d\t", n);
-            System.out.format("[%f, %d, %d, %d]\t", tlin, linsum, linij[0], linij[1]);
-            System.out.format("[%f, %d, %d, %d]\t", tqd, qdsum, qdij[0], qdij[1]);
-            System.out.format("[%f, %d, %d, %d]\n", tcu, cusum, cuij[0], cuij[1]);
-        }
+            System.out.println("");
+        }        
     }
        
     // populates array with n random numbers
@@ -138,6 +151,7 @@ public class Assignment02
         return maxsum;
     }
     
+    // for some reason we had to code this, but never use it? go figure.
     public static void printSequence(int[] arr, int i, int j)
     {
         for(int k = i; k <= j; k++){
