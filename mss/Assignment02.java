@@ -66,7 +66,7 @@ public class Assignment02
             double tcu = -1;
             
             // another check to stop running for N >> 1
-            if(n < 1e4){    
+            if(n < 1e5){    
                 long tstart3 = System.nanoTime();
                 cusum        = mssCubic(arr, n, cuij);
                 dt           = (System.nanoTime() - tstart3);
