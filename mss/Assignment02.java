@@ -42,7 +42,12 @@ public class Assignment02
             int linsum   = mssLinear(arr, n, linij);
             long dt      = (System.nanoTime() - tstart1);
             double tlin  = (double)dt*1e-6;
-            System.out.printf("%-12s time (ms) = %-15f sum = %-10d i = %-10d j = %-10d\n", "LINEAR:", tlin, linsum, linij[0], linij[1]);
+            System.out.printf("%-12s time (ms) = %-15f sum = %-10d i = %-10d j = %-10d\n", 
+                              "LINEAR:", 
+                              tlin, 
+                              linsum, 
+                              linij[0], 
+                              linij[1]);
             
             // don't run the algorithms for big N (takes too long)
             if (n < 1e7){
@@ -50,10 +55,20 @@ public class Assignment02
                 int qdsum    = mssQuadratic(arr, n, qdij);
                 dt           = (System.nanoTime() - tstart2);
                 double tqd   = (double)dt*1e-6;
-                System.out.printf("%-12s time (ms) = %-15f sum = %-10d i = %-10d j = %-10d\n", "QUADRATIC:", tqd, qdsum, qdij[0], qdij[1]);
+                System.out.printf("%-12s time (ms) = %-15f sum = %-10d i = %-10d j = %-10d\n", 
+                                  "QUADRATIC:", 
+                                  tqd, 
+                                  qdsum, 
+                                  qdij[0], 
+                                  qdij[1]);
             }
             else{
-                System.out.printf("%-12s time (ms) = %-15s sum = %-10s i = %-10s j = %-10s\n", "QUADRATIC:", "NA", "NA", "NA", "NA");
+                System.out.printf("%-12s time (ms) = %-15s sum = %-10s i = %-10s j = %-10s\n",
+                                  "QUADRATIC:", 
+                                  "NA",
+                                  "NA",
+                                  "NA",
+                                  "NA");
             }
             
             // another check to stop running for N >> 1
@@ -62,10 +77,20 @@ public class Assignment02
                 int cusum    = mssCubic(arr, n, cuij);
                 dt           = (System.nanoTime() - tstart3);
                 double tcu   = (double)dt*1e-6;
-                System.out.printf("%-12s time (ms) = %-15f sum = %-10d i = %-10d j = %-10d\n", "CUBIC:", tcu, cusum, cuij[0], cuij[1]);
+                System.out.printf("%-12s time (ms) = %-15f sum = %-10d i = %-10d j = %-10d\n",
+                                  "CUBIC:",
+                                  tcu,
+                                  cusum,
+                                  cuij[0],
+                                  cuij[1]);
             }
             else{
-                System.out.printf("%-12s time (ms) = %-15s sum = %-10s i = %-10s j = %-10s\n", "CUBIC:", "NA", "NA", "NA", "NA");
+                System.out.printf("%-12s time (ms) = %-15s sum = %-10s i = %-10s j = %-10s\n",
+                                  "CUBIC:",
+                                  "NA",
+                                  "NA",
+                                  "NA",
+                                  "NA");
             }
             System.out.println("");
         }        
