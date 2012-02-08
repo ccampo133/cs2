@@ -19,28 +19,21 @@ public class Assignment03
             
             // create array of patches
             Patch[] patches = new Patch[numpatch];
-
-            // findme: DEBUG
-            System.out.printf("NUMPATCH = %d   NUMIT = %d\n", numpatch, numit);
-        
+            
             // loop over patches and gather info
             for(int i = 0; i < numpatch; i++){
-                int   patchId       = scnr.nextInt();
-                float emissionPower = scnr.nextFloat();
-                float reflectance   = scnr.nextFloat();
-                int   numVisPatch   = scnr.nextInt();
-                
                 // assign variables
-                patches[i] = new Patch(patchId, emissionPower, reflectance, numVisPatch);
-                                
+                patches[i] = new Patch(scnr.nextInt(),      // patch id
+                                       scnr.nextFloat(),    // emission pwr
+                                       scnr.nextFloat(),    // reflectance
+                                       scnr.nextInt()       // num vis patch
+                                       );
+                                       
                 // loop over num visible patches
-                for(int j = 0; j < numVisPatch; j++){
-                    int   visPatchId = scnr.nextInt();
-                    float formfactor = scnr.nextFloat();
-                    
+                for(int j = 0; j < patches[i].numVisPatch; j++){
                     // update patch objects
-                    patches[i].visIds[j]    = visPatchId;
-                    patches[i].formfacts[j] = formfactor;                    
+                    patches[i].visIds[j]    = scnr.nextInt();
+                    patches[i].formfacts[j] = scnr.nextFloat();
                 }
                 // findme: DEBUG
                 patches[i].printInfo();
