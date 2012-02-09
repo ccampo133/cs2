@@ -11,7 +11,8 @@ public class Assignment03
     public static void main(String[] args)
     {
         // initialize all data 
-        try{
+        try
+        {
             // start reading the input txt file
             String  fname = "Assignment03.txt";
             Scanner scnr  = new Scanner(new File(fname));
@@ -21,8 +22,12 @@ public class Assignment03
             // create array of patches
             Patch[] patch = new Patch[numpatch];
             
+            System.out.printf("%-5s %7s    %7s\n", "Id", "ePwr", "Reflect");
+            System.out.println("========================");
+            
             // loop over patches and gather info
-            for(int i = 0; i < numpatch; i++){
+            for(int i = 0; i < numpatch; i++)
+            {
                 // assign variables
                 patch[i] = new Patch(scnr.nextInt(),      // patch id
                                      scnr.nextFloat(),    // emission pwr
@@ -31,18 +36,25 @@ public class Assignment03
                                      );
                                        
                 // loop over num visible patches
-                for(int j = 0; j < patch[i].numVisPatch; j++){
+                for(int j = 0; j < patch[i].numVisPatch; j++)
+                {
                     // update patch objects
                     patch[i].visIds[j]    = scnr.nextInt();
                     patch[i].formfacts[j] = scnr.nextFloat();
                 }
-                // findme: DEBUG
-                //patch[i].printInfo();
+                
+                // print id, reflectance and emission power
+                System.out.printf("[%3d] %7.2f %7.2f\n", patch[i].patchId,
+                                                        patch[i].emissionPower,
+                                                        patch[i].reflectance
+                                                        );
             }
             
             // start main shooting algorithm
+            // initialize unshot power
             float[] pwrVals = new float[numpatch];
-            for(int i = 0; i < numpatch; i++){
+            for(int i = 0; i < numpatch; i++)
+            {
                 patch[i].unshotPower = patch[i].emissionPower;
                 patch[i].totalPower  = patch[i].unshotPower;
                 pwrVals[i]           = patch[i].unshotPower;
@@ -51,28 +63,26 @@ public class Assignment03
             // initialize indirect heap helper arrays
             int[] outof = new int[pwrVals.length];
             int[] into  = new int[pwrVals.length];
-            for(int i = 0; i < outof.length; i++){
-                outof[i] = i;
+            for(int i = 0; i < outof.length; i++)
+            {
+                outof[i] = i;   // arrays of indices
                 into[i]  = i;
             }
            
             // initialize indirect heap
-            System.out.println("ORIGINAL VALUES = " + Arrays.toString(pwrVals));
             buildIndirectHeap(pwrVals, outof, into, pwrVals.length);
-            System.out.println("HEAPIFIED");
-            printHeap(pwrVals, outof);
-            System.out.println("");
             
             // start iterative solution
             int converged = 0;
-            while(converged != numit){
+            while(converged != numit)
+            {
                 // find patch k with max unshot pwr in O(1)
                 int k = getMaxPwrInd(outof);
-                System.out.printf("k = %d\n", k);
                 
                 // shoot unshotPower to all adjacent patches
-                for(int j = 0; j < patch[k].visIds.length; j++){
-                    int i = patch[k].visIds[j]-1;
+                for(int j = 0; j < patch[k].visIds.length; j++)
+                {
+                    int i = patch[k].visIds[j] - 1;
                     patch[i].totalPower  += patch[i].reflectance*
                                             patch[k].formfacts[j]*
                                             patch[k].unshotPower;
@@ -80,44 +90,45 @@ public class Assignment03
                     patch[i].unshotPower += patch[i].reflectance*
                                             patch[k].formfacts[j]*
                                             patch[k].unshotPower;
+                                            
                     // restore heap property
                     increasePatchValue(pwrVals, into, outof, i, patch[i].unshotPower);
-                    //pwrVals[i] = patch[i].unshotPower;
-                    //buildIndirectHeap(pwrVals, outof, into, pwrVals.length);
-                    System.out.println("INCREASED");
-                    System.out.println("=========");
-                    System.out.println("pwrVals: " + Arrays.toString(pwrVals));
-                    System.out.println("into: " + Arrays.toString(into));
-                    System.out.println("outof: " + Arrays.toString(outof) + "\n");
-                    printHeap(pwrVals, outof);
-                    System.out.println("");
                 }
                 patch[k].unshotPower = 0;
                 // restore heap property
                 decreasePatchValue(pwrVals, into, outof, k, patch[k].unshotPower);
-                System.out.println("DECREASED");
-                System.out.println("=========");
-                System.out.println("pwrVals: " + Arrays.toString(pwrVals));
-                System.out.println("into: " + Arrays.toString(into));
-                System.out.println("outof: " + Arrays.toString(outof) + "\n");
-                printHeap(pwrVals, outof);
                 converged++;
-                for(int i = 0; i < numpatch; i++){
-                    System.out.printf("ID = %d  TotPwr = %f\n", 
-                                      patch[i].patchId,
-                                      patch[i].totalPower);
-                }
+            }
+            System.out.println("\n");
+            System.out.printf("RESULTS AFTER %d ITERATIONS:\n", numit);
+            System.out.printf("===========================\n");
+            // print status after the iteration
+            for(int i = 0; i < numpatch; i++)
+            {
+                System.out.printf("[%d] %f\n", 
+                                  patch[i].patchId,
+                                  patch[i].totalPower);
+                printPatchInfo(patch[i]);
+                System.out.println("\n");
             }
         }
-        catch(Exception ioe){
+        catch(Exception ioe)
+        {
             System.out.println("Error: " + ioe.getMessage());
+        }
+    }
+    
+    public static void printPatchInfo(Patch patch){
+        for(int i = 0; i < patch.visIds.length; i++){
+            System.out.printf("(%d, %.2f)", patch.visIds[i],
+                                            patch.formfacts[i]);
         }
     }
     
     // ######################
     // # BEGIN HEAP METHODS #
     // ######################
-    private static void swap(int[] arr, int ibeg, int iend)
+    public static void swap(int[] arr, int ibeg, int iend)
     {
         int tmp   = arr[ibeg];
         arr[ibeg] = arr[iend];
