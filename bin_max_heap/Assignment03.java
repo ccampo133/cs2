@@ -124,6 +124,7 @@ public class Assignment03
         arr[iend] = tmp;
     }
     
+    // findme: debug method
     public static void printHeap(float[] key, int[] outof)
     {
         System.out.println("HEAP STATUS");
@@ -143,12 +144,14 @@ public class Assignment03
     }
     
     // modified siftdown to work for indirect heaps
+    // works in O(lg n) time
     public static void siftdown(float[] key, int[] outof, int[] into, int i, int n)
     {
         int temp = outof[i];
         // use 2*i + 1 since array starts at 0, not 1
         while(2*i + 1 <= n){
             int child = 2*i + 1;
+            // find the child node with the maximum value
             if(child+1 <= n && key[outof[child+1]] > key[outof[child]]){
                 child = child + 1;
             }
@@ -163,20 +166,21 @@ public class Assignment03
         }
     }
     
-    // returns patch index with the most power in O(1) time
+    // returns patch index with the most power
+    // works in O(1) time
     public static int getMaxPwrInd(int[] outof)
     {
         return outof[0];
     }
     
     // increases value in heap and preserves structure
+    // works in O(lg n) time.
     public static void increasePatchValue(float[] key, int[] into, int[] outof,
                                           int i, float newval)
     {
         key[i] = newval;
         int c  = into[i];    // child node
         int p  = c/2;        // parent node
-        
         // loop until we hit the top of the heap
         while(p >= 0){
             if(key[outof[p]] >= newval){
@@ -194,6 +198,7 @@ public class Assignment03
     }
     
     // decreases value in heap and preserves structure
+    // works in O(lg n) time
     public static void decreasePatchValue(float[] key, int[] into, int[] outof,
                                           int i, float newval)
     {
