@@ -37,7 +37,7 @@ public class Assignment03
                     patch[i].formfacts[j] = scnr.nextFloat();
                 }
                 // findme: DEBUG
-                patch[i].printInfo();
+                //patch[i].printInfo();
             }
             
             // start main shooting algorithm
@@ -57,16 +57,67 @@ public class Assignment03
             }
            
             // initialize indirect heap
-            buildIndirectHeap(pwrVals, outof, into, pwrVals2.length);
+            buildIndirectHeap(pwrVals, outof, into, pwrVals.length);
             
             // start iterative solution
             int converged = 0;
             while(converged != numit){
+                // find patch k with max unshot pwr in O(1)
+                int k = getMaxPwrInd(outof);
+                System.out.printf("k = %d\n", k);
+                
+                // shoot unshotPower to all adjacent patches
+                for(int j = 0; j < patch[k].visIds.length; j++){
+                    int i = patch[k].visIds[j]-1;
+                    patch[i].totalPower  += patch[i].reflectance*
+                                            patch[k].formfacts[j]*
+                                            patch[k].unshotPower;
+                                               
+                    patch[i].unshotPower += patch[i].reflectance*
+                                            patch[k].formfacts[j]*
+                                            patch[k].unshotPower;
+                    // restore heap property
+                    increasePatchValue(pwrVals, into, outof, i, patch[i].unshotPower);
+                    //System.out.println("INCREASED");
+                    //System.out.println("=========");
+                    //System.out.println("pwrVals: " + Arrays.toString(pwrVals));
+                    //System.out.println("into: " + Arrays.toString(into));
+                    //System.out.println("outof: " + Arrays.toString(outof) + "\n");
+                }
+                patch[k].unshotPower = 0;
+                // restore heap property
+                //pwrVals[k] = 0;
+                //decreasePatchValue(pwrVals, into, outof, k, 0);
+                //increasePatchValue(pwrVals, into, outof, k, patch[k].unshotPower);
+                //System.out.println("DECREASED");
+                //System.out.println("=========");
+                //System.out.println("pwrVals: " + Arrays.toString(pwrVals));
+                //System.out.println("into: " + Arrays.toString(into));
+                //System.out.println("outof: " + Arrays.toString(outof) + "\n");
+
+                converged++;
+                for(int i = 0; i < numpatch; i++){
+                    System.out.printf("ID = %d  TotPwr = %f\n", 
+                                      patch[i].patchId,
+                                      patch[i].totalPower);
+                }
             }
         }
         catch(Exception ioe){
             System.out.println("Error: " + ioe.getMessage());
         }
+        
+        float[] foo = {66, 12, 312, 25, 8, 109, 7, 18};
+        int[] ifoo = {1, 7, 0, 6, 4, 2, 5, 3};
+        int[] ofoo = {2, 0, 5, 7, 4, 6, 3, 1};
+        float bar = 20;
+        
+        increasePatchValue(foo, ifoo, ofoo, 1, bar);
+        System.out.println(Arrays.toString(foo));
+        System.out.println(Arrays.toString(ifoo));
+        System.out.println(Arrays.toString(ofoo));
+        
+        
     }
     
     // ######################
@@ -82,7 +133,8 @@ public class Assignment03
             start--;
         }
     }
-  
+    
+    // modified siftdown to work for indirect heaps
     public static void siftdown(float[] key, int[] outof, int[] into, int i, int n)
     {
         int temp = outof[i];
@@ -103,5 +155,50 @@ public class Assignment03
         }
         outof[i]   = temp;
         into[temp] = i;
+    }
+    
+    // returns patch index with the most power in O(1) time
+    public static int getMaxPwrInd(int[] outof)
+    {
+        return outof[0];
+    }
+    
+    public static void increasePatchValue(float[] key, int[] into, int[] outof,
+                                          int i, float newval)
+    {
+        key[i] = newval;
+        int c = into[i];
+        int p = c/2;     
+        while(p >= 0){
+            if(key[outof[p]] >= newval){
+                break;
+            }
+            outof[c] = outof[p];
+            into[outof[c]] = c;
+            c = p;
+            p = c/2;
+        }
+        outof[c] = i;
+        into[i]  = c;
+    }
+    
+    // decrease 
+    public static void decreasePatchValue(float[] key, int[] into, int[] outof,
+                                          int i, float newval)
+    {
+        key[i] = newval;
+        int c = into[i];
+        int p = c/2;
+        while(c <= key.length-1){
+            if(key[outof[p]] <= newval){
+                break;
+            }
+            outof[c] = outof[p];
+            into[outof[c]] = c;
+            c = p;
+            p = c/2;
+        }
+        outof[c] = i;
+        into[i]  = c;
     }
 }
