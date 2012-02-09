@@ -57,7 +57,11 @@ public class Assignment03
             }
            
             // initialize indirect heap
+            System.out.println("ORIGINAL VALUES = " + Arrays.toString(pwrVals));
             buildIndirectHeap(pwrVals, outof, into, pwrVals.length);
+            System.out.println("HEAPIFIED");
+            printHeap(pwrVals, outof);
+            System.out.println("");
             
             // start iterative solution
             int converged = 0;
@@ -78,23 +82,25 @@ public class Assignment03
                                             patch[k].unshotPower;
                     // restore heap property
                     increasePatchValue(pwrVals, into, outof, i, patch[i].unshotPower);
-                    //System.out.println("INCREASED");
-                    //System.out.println("=========");
-                    //System.out.println("pwrVals: " + Arrays.toString(pwrVals));
-                    //System.out.println("into: " + Arrays.toString(into));
-                    //System.out.println("outof: " + Arrays.toString(outof) + "\n");
+                    //pwrVals[i] = patch[i].unshotPower;
+                    //buildIndirectHeap(pwrVals, outof, into, pwrVals.length);
+                    System.out.println("INCREASED");
+                    System.out.println("=========");
+                    System.out.println("pwrVals: " + Arrays.toString(pwrVals));
+                    System.out.println("into: " + Arrays.toString(into));
+                    System.out.println("outof: " + Arrays.toString(outof) + "\n");
+                    printHeap(pwrVals, outof);
+                    System.out.println("");
                 }
                 patch[k].unshotPower = 0;
                 // restore heap property
-                //pwrVals[k] = 0;
-                //decreasePatchValue(pwrVals, into, outof, k, 0);
-                //increasePatchValue(pwrVals, into, outof, k, patch[k].unshotPower);
-                //System.out.println("DECREASED");
-                //System.out.println("=========");
-                //System.out.println("pwrVals: " + Arrays.toString(pwrVals));
-                //System.out.println("into: " + Arrays.toString(into));
-                //System.out.println("outof: " + Arrays.toString(outof) + "\n");
-
+                decreasePatchValue(pwrVals, into, outof, k, patch[k].unshotPower);
+                System.out.println("DECREASED");
+                System.out.println("=========");
+                System.out.println("pwrVals: " + Arrays.toString(pwrVals));
+                System.out.println("into: " + Arrays.toString(into));
+                System.out.println("outof: " + Arrays.toString(outof) + "\n");
+                printHeap(pwrVals, outof);
                 converged++;
                 for(int i = 0; i < numpatch; i++){
                     System.out.printf("ID = %d  TotPwr = %f\n", 
@@ -106,23 +112,25 @@ public class Assignment03
         catch(Exception ioe){
             System.out.println("Error: " + ioe.getMessage());
         }
-        
-        float[] foo = {66, 12, 312, 25, 8, 109, 7, 18};
-        int[] ifoo = {1, 7, 0, 6, 4, 2, 5, 3};
-        int[] ofoo = {2, 0, 5, 7, 4, 6, 3, 1};
-        float bar = 10;
-        
-        decreasePatchValue(foo, ifoo, ofoo, 0, bar);
-        System.out.println(Arrays.toString(foo));
-        System.out.println(Arrays.toString(ifoo));
-        System.out.println(Arrays.toString(ofoo));
-        
-        
     }
     
     // ######################
     // # BEGIN HEAP METHODS #
     // ######################
+    private static void swap(int[] arr, int ibeg, int iend)
+    {
+        int tmp   = arr[ibeg];
+        arr[ibeg] = arr[iend];
+        arr[iend] = tmp;
+    }
+    
+    public static void printHeap(float[] key, int[] outof)
+    {
+        System.out.println("HEAP STATUS");
+        for(int i = 0; i < outof.length; i++){
+            System.out.printf("%f\n", key[outof[i]]);
+        }
+    }
  
     // standard heapify method
     public static void buildIndirectHeap(float[] key, int[] outof, int[] into, int n)
@@ -138,7 +146,6 @@ public class Assignment03
     public static void siftdown(float[] key, int[] outof, int[] into, int i, int n)
     {
         int temp = outof[i];
-        
         // use 2*i + 1 since array starts at 0, not 1
         while(2*i + 1 <= n){
             int child = 2*i + 1;
@@ -147,14 +154,13 @@ public class Assignment03
             }
             // move child up?
             if(key[outof[child]] > key[outof[i]]){
-                outof[i]       = outof[child];
-                into[outof[i]] = i;
+                // swap nodes
+                swap(outof, i, child);
+                swap(into, outof[i], outof[child]);
+                i = child;
             }
             else{break;}
-            i = child;
         }
-        outof[i]   = temp;
-        into[temp] = i;
     }
     
     // returns patch index with the most power in O(1) time
@@ -191,23 +197,8 @@ public class Assignment03
     public static void decreasePatchValue(float[] key, int[] into, int[] outof,
                                           int i, float newval)
     {
-        key[i] = newval;
-        int p  = into[i];   // index of parent node
-        int c  = 2*p + 1;   // index of child node
-        
-        // loop until we run off the heap
-        while(c <= key.length - 1){
-            if(key[outof[c]] <= newval){
-                break;
-            }
-            // swap parent and child and iterate
-            outof[p] = outof[c];
-            into[outof[p]] = p;
-            p = c;
-            c = 2*p + 1;
-        }
-        // update final values
-        outof[p] = i;
-        into[i]  = p;
+        key[i]    = newval;
+        int start = into[i];
+        siftdown(key, outof, into, start, key.length - 1);
     }
 }
