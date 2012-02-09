@@ -110,9 +110,9 @@ public class Assignment03
         float[] foo = {66, 12, 312, 25, 8, 109, 7, 18};
         int[] ifoo = {1, 7, 0, 6, 4, 2, 5, 3};
         int[] ofoo = {2, 0, 5, 7, 4, 6, 3, 1};
-        float bar = 20;
+        float bar = 10;
         
-        increasePatchValue(foo, ifoo, ofoo, 1, bar);
+        decreasePatchValue(foo, ifoo, ofoo, 0, bar);
         System.out.println(Arrays.toString(foo));
         System.out.println(Arrays.toString(ifoo));
         System.out.println(Arrays.toString(ofoo));
@@ -163,42 +163,51 @@ public class Assignment03
         return outof[0];
     }
     
+    // increases value in heap and preserves structure
     public static void increasePatchValue(float[] key, int[] into, int[] outof,
                                           int i, float newval)
     {
         key[i] = newval;
-        int c = into[i];
-        int p = c/2;     
+        int c  = into[i];    // child node
+        int p  = c/2;        // parent node
+        
+        // loop until we hit the top of the heap
         while(p >= 0){
             if(key[outof[p]] >= newval){
                 break;
             }
+            // swap parent and child and iterate
             outof[c] = outof[p];
             into[outof[c]] = c;
             c = p;
             p = c/2;
         }
+        // update final values
         outof[c] = i;
         into[i]  = c;
     }
     
-    // decrease 
+    // decreases value in heap and preserves structure
     public static void decreasePatchValue(float[] key, int[] into, int[] outof,
                                           int i, float newval)
     {
         key[i] = newval;
-        int c = into[i];
-        int p = c/2;
-        while(c <= key.length-1){
-            if(key[outof[p]] <= newval){
+        int p  = into[i];   // index of parent node
+        int c  = 2*p + 1;   // index of child node
+        
+        // loop until we run off the heap
+        while(c <= key.length - 1){
+            if(key[outof[c]] <= newval){
                 break;
             }
-            outof[c] = outof[p];
-            into[outof[c]] = c;
-            c = p;
-            p = c/2;
+            // swap parent and child and iterate
+            outof[p] = outof[c];
+            into[outof[p]] = p;
+            p = c;
+            c = 2*p + 1;
         }
-        outof[c] = i;
-        into[i]  = c;
+        // update final values
+        outof[p] = i;
+        into[i]  = p;
     }
 }
