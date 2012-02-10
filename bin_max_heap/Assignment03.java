@@ -158,7 +158,6 @@ public class Assignment03
     // works in O(lg n) time
     public static void siftdown(float[] key, int[] outof, int[] into, int i, int n)
     {
-        int temp = outof[i];
         // use 2*i + 1 since array starts at 0, not 1
         while(2*i + 1 <= n){
             int child = 2*i + 1;
