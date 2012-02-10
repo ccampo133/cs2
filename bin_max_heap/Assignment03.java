@@ -118,10 +118,11 @@ public class Assignment03
         }
     }
     
-    public static void printPatchInfo(Patch patch){
-        for(int i = 0; i < patch.visIds.length; i++){
-            System.out.printf("(%d, %.2f)", patch.visIds[i],
-                                            patch.formfacts[i]);
+    public static void printPatchInfo(Patch patch)
+    {
+        for(int i = 0; i < patch.visIds.length; i++)
+        {
+            System.out.printf("(%d, %.2f)", patch.visIds[i], patch.formfacts[i]);
         }
     }
     
@@ -139,7 +140,8 @@ public class Assignment03
     public static void printHeap(float[] key, int[] outof)
     {
         System.out.println("HEAP STATUS");
-        for(int i = 0; i < outof.length; i++){
+        for(int i = 0; i < outof.length; i++)
+        {
             System.out.printf("%f\n", key[outof[i]]);
         }
     }
@@ -148,7 +150,8 @@ public class Assignment03
     public static void buildIndirectHeap(float[] key, int[] outof, int[] into, int n)
     {
         int start = (n - 2)/2;
-        while(start >= 0){
+        while(start >= 0)
+        {
             siftdown(key, outof, into, start, n - 1);
             start--;
         }
@@ -159,14 +162,17 @@ public class Assignment03
     public static void siftdown(float[] key, int[] outof, int[] into, int i, int n)
     {
         // use 2*i + 1 since array starts at 0, not 1
-        while(2*i + 1 <= n){
+        while(2*i + 1 <= n)
+        {
             int child = 2*i + 1;
             // find the child node with the maximum value
-            if(child+1 <= n && key[outof[child+1]] > key[outof[child]]){
+            if(child+1 <= n && key[outof[child+1]] > key[outof[child]])
+            {
                 child = child + 1;
             }
             // move child up?
-            if(key[outof[child]] > key[outof[i]]){
+            if(key[outof[child]] > key[outof[i]])
+            {
                 // swap nodes
                 swap(outof, i, child);
                 swap(into, outof[i], outof[child]);
@@ -192,8 +198,10 @@ public class Assignment03
         int c  = into[i];    // child node
         int p  = c/2;        // parent node
         // loop until we hit the top of the heap
-        while(p >= 0){
-            if(key[outof[p]] >= newval){
+        while(p >= 0)
+        {
+            if(key[outof[p]] >= newval)
+            {
                 break;
             }
             // swap parent and child and iterate
