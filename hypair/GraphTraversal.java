@@ -24,15 +24,15 @@ public class GraphTraversal
             // loop over adjacent nodes in list
             while(listnode != null)
             {
-                vertex = listnode.vertex;
+                int vert = listnode.vertex;
                 // visit all unvisted nodes and iterate along
-                if(!visited[vertex])
+                if(!visited[vert])
                 {
-                    visited[vertex] = true;
-                    q.add(vertex);
+                    visited[vert] = true;
+                    q.add(vert);
                     
                     // do anything here; print for now
-                    System.out.println(vertex + 1);
+                    System.out.println(vert + 1);
                 }
                 listnode = listnode.next;
             }
@@ -75,5 +75,60 @@ public class GraphTraversal
                 else{ listnode = listnode.next; }
             }
         }
+    }
+    
+    // calculates the and returns shortest distances and paths from vertex 
+    // `start` to all other vertices on an unweighted graph.
+    public static void pathUW(AdjacencyList[] adj, int start, int[] dist, int[] prev)
+    {
+        int            n = adj.length;
+        Queue<Integer> q = new LinkedList<Integer>();
+        
+        // initialize length's to -1
+        for(int i = 0; i < n; i++)
+        {
+            dist[i] = Integer.MAX_VALUE;
+            prev[i] = -1;
+        }
+        
+        dist[start] = 0;
+        q.add(start);
+        
+        while(!q.isEmpty())
+        {
+            int           vertex   = q.poll();
+            AdjacencyList adjnodes = adj[vertex];
+            Node          listnode = adjnodes.head;
+            while(listnode != null)
+            {
+                int vert = listnode.vertex;
+                if(dist[vert] == Integer.MAX_VALUE)
+                {
+                    dist[vert] = dist[vertex] + 1;
+                    prev[vert] = vertex;
+                    q.add(vert);
+                }
+                listnode = listnode.next;
+            }
+        }
+    }
+    
+    // prints the path from vertexId `start` to vertexId `end`
+    public static void printPath(int[] prev, int start, int end)
+    {
+        //final ArrayList<Integer> path = new ArrayList<Integer>();
+        System.out.printf("The shortest path from %d to %d is: ", start, end);
+        int    tmp  = end;
+        String path = "";
+        // loop while path is defined
+        while(prev[tmp] != -1)
+        {
+            //path.add(0, tmp);
+            path = " -> " + tmp + path;
+            tmp  = prev[tmp];
+        }
+        //path.add(0, tmp);
+        path = tmp + path;
+        System.out.print(path + "\n");
     }
 }
