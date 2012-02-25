@@ -1,15 +1,46 @@
+Author: Chris Campo
+
 My assigments for COP 3502C (Computer Science 2), UCF Spring 2012.
 
 Contents:
----------
+=========
 HW1 (1/16/2012) - Array Reversal
  array_reverse/
+ * This program simply reverses the contents of an array. 
  
 HW2 (1/22/2012) - Maximum Subsequence Sum
  mss/
+ * This program demonstrates the running times of three different 
+ * algorithms that are used to calculate the maximum subsequence sum (MSS) 
+ * of a sequence of values (stored in an array). The three algorithms run 
+ * in O(n), O(n^2), and O(n^3). The program generates arrays ranging in 
+ * size from 10 to 100 million elements, fills them with random numbers, 
+ * and then runs each MSS algorithm on them. The times the algorithms take 
+ * to complete are logged and printed. A Python script is included to plot 
+ * the results of observed/predicted runtime vs number of elements. 
  
 HW3 (2/08/2012) - Binary Max Heap
  bin_max_heap/
+ * This program demonstrates the usage of an indirect binary 
+ * maximum-heap priority queue. The heap is used in a computer lighting 
+ * algorithm. The algorithm starts with an unlit scene with an emitter 
+ * placed somewhere. The scene is gridded into patches that have some 
+ * re-emission power. When the shooting algorithm starts, the main emitter 
+ * emites a burst of light and then the algorithm iterates while the light 
+ * hits the scene patches and they subsequently re-emit some fraction of 
+ * their absorbed light. The heap is used to keep track of brightness of 
+ * the patches and find the brightest patch in constant O(1) time. 
+
  
 HW4 (2/23/2012) - Hypothetical Airline System
  hypair/
+ * This program simulates a hypothetical airline reservation system. The 
+ * system demonstrates many interesting concepts of computer science. The 
+ * concepts of linked-lists, graphs, graph traversal, hashing, disjoint 
+ * sets, and priority queues are all utilized to model the system. All data 
+ * structures are hand coded, despite Java offering versions of them in the 
+ * standard library. The code is therefore useful for demonstrating 
+ * implementations of these concepts in Java. 
+
+
+
