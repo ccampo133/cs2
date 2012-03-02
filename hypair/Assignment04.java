@@ -10,25 +10,48 @@ public class Assignment04
 {
     public static void main(String[] args)
     {
-        HashMap map = new HashMap();
-        System.out.print(map.get("orlando"));
+        HashMap<String, Integer> map = new HashMap<String, Integer>();
         // read data file
         try
         {
             String  fname  = "Assignment04.txt";
             Scanner scnr   = new Scanner(new File(fname));
-            int numcities  = scnr.nextInt();
-            int numflights = scnr.nextInt();
+            int numCities  = scnr.nextInt();
+            int numFlights = scnr.nextInt();
+            
+            // init graph
+            Graph flightMap = new Graph(numCities);
             
             // gather flight information
-            for(int i = 0; i < numflights; i++)
+            int idSoFar = 0;
+            for(int i = 0; i < numFlights; i++)
             {
-                System.out.print(scnr.next() + " ");
-                System.out.print(scnr.next() + " ");
-                System.out.print(scnr.nextInt() + " ");
-                System.out.print(scnr.nextInt() + " ");
-                System.out.println(scnr.nextInt() + " ");
+                String city1 = scnr.next();
+                String city2 = scnr.next();
+                for(int j = 0; j < 3; j++){ scnr.next(); } // scan and ignore the other vars
+                int cost = scnr.nextInt();
+                
+                // assign vertices
+                if(map.get(city1) == null)
+                {
+                    map.put(city1, idSoFar);
+                    flightMap.addNode(city1, idSoFar);
+                    idSoFar++;
+                }
+                if(map.get(city2) == null)
+                {
+                    map.put(city2, idSoFar);
+                    flightMap.addNode(city2, idSoFar);
+                    idSoFar++;
+                }
+            
+                // create respective edge
+                flightMap.addEdge(city1, city2, cost, map);
             }
+            // FINDME: debug call
+            flightMap.printGraph();
+            
+            System.out.printf("%d \n", flightMap.getEdgeWeight(0, 3));
         }
         catch(Exception ioe)
         {
