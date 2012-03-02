@@ -67,6 +67,31 @@ public class Graph
             System.out.println("\n");
         }
     }
+    
+    public void breadthFirstSearch(int startId)
+    {
+        boolean[] visited = new boolean[nodes.length];
+        Queue<Node> q     = new LinkedList<Node>();
+        Node startNode    = nodes[startId];
+        visited[startId]  = true;
+        q.add(startNode);
+        System.out.println(startNode.name);
+        
+        while(!q.isEmpty())
+        {
+            Node curNode = q.poll();
+            for(Node adjNode : curNode.adjNodes)
+            {
+                int vertexId = adjNode.id;
+                if(!visited[vertexId])
+                {
+                    visited[vertexId] = true;
+                    q.add(adjNode);
+                    System.out.println(adjNode.name);
+                }
+            }
+        }
+    }
 }
 
 // class for a node (vertex) of the graph
