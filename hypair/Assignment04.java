@@ -10,10 +10,10 @@ public class Assignment04
 {
     public static void main(String[] args)
     {
-        HashMap<String, Integer> map = new HashMap<String, Integer>();
         // read data file
         try
         {
+            HashMap<String, Integer> map = new HashMap<String, Integer>();
             String  fname  = "Assignment04.txt";
             Scanner scnr   = new Scanner(new File(fname));
             int numCities  = scnr.nextInt();
@@ -28,7 +28,7 @@ public class Assignment04
             {
                 String city1 = scnr.next();
                 String city2 = scnr.next();
-                for(int j = 0; j < 3; j++){ scnr.next(); } // scan and ignore the other vars
+                for(int j = 0; j < 3; j++){ scnr.next(); } // ignores flight nums and times
                 int cost = scnr.nextInt();
                 
                 // assign vertices
@@ -48,13 +48,48 @@ public class Assignment04
                 // create respective edge
                 flightMap.addEdge(city1, city2, cost, map);
             }
+                        
+            // use disjoint set data structure to represent connected cities
+            DisjointSet set = new DisjointSet(numCities);
             
-            int[] path = new int[numCities];
-            int[] cost = new int[numCities];
+            // initialize the set
+            for(int i = 0; i < numCities; i++)
+            {
+                set.makeset(flightMap.getNode(i).id);
+            }
+            
+            // find connected components
+            boolean[] seen  = new boolean[numCities];
+            for(int i = 0; i < numCities; i++)
+            {
+                if(!seen[i]){ flightMap.depthFirst(seen, i, set); }
+            }
+            
+            // check queries
+            while(scnr.hasNextLine())
+            {
+                String city1 = scnr.next();
+                String city2 = scnr.next();
+                System.out.println(city1 + " " + city2);
+                
+                // check if there is a path in O(lg n) time
+                if(set.findset(map.get(city1)) == set.findset(map.get(city2)))
+                {
+                    int[] cost = new int[numCities];
+                    int[] path = new int[numCities];
+                    
+                    // get minimum hop flight
+                    System.out.print("Minimum Hop Flight: ");
+                    flightMap.unweightedPath(cost, path, map.get(city1));
+                    flightMap.printPath(cost, path, map.get(city2));
+                    
+                    // get minimum cost flight
+                    System.out.print("Minimum Cost Flight: ");
+                    System.out.println("TODO\n"); // FINDME: code this part
+                }
+                else{ System.out.println("No path\n"); }
+            }
         }
-        catch(Exception ioe)
-        {
-            System.out.println("Error: " + ioe.getMessage());
-        }
+        catch(Exception ioe){ System.out.println("Error: " + ioe.getMessage()); }
     }
 }

@@ -4,6 +4,7 @@
 
 import java.util.*;
 
+// weighted directed graph data structure consiting of nodes and edges.
 public class Graph
 {
     public Node[] nodes;
@@ -39,7 +40,7 @@ public class Graph
     }
     
     // returns weight associated with the queried edge
-    // weight(u, v) in the textbook
+    // weight(u, v) in the textbook.
     public int getEdgeWeight(int idSrc, int idDest)
     {
         for(Edge edge : edges)
@@ -52,13 +53,13 @@ public class Graph
         return -1;  // edge doesn't exist
     }
     
-    // returns the node located at vertex `id`
+    // returns the node located at vertex `id`.
     public Node getNode(int id)
     {
         return nodes[id];
     }
 
-    // prints a representation of the graph
+    // prints a representation of the graph.
     public void printGraph()
     {
         for(int i = 0; i < numNodes; i++)
@@ -73,7 +74,7 @@ public class Graph
         }
     }
     
-    // breadth first traversal adapted from Johnsonbaugh & Schaefer 2003
+    // breadth first traversal adapted from Johnsonbaugh & Schaefer 2003.
     public void breadthFirst(int startId)
     {
         boolean[] visited = new boolean[nodes.length];
@@ -100,31 +101,26 @@ public class Graph
         }
     }
   
-    // depth first traversal adapted from Johnsonbaugh & Schaefer 2003
-    public void depthFirstRecurse(boolean[] visited, int startId)
+    // keeps track of connected nodes via a disjoint set.
+    // modded depth first traversal adapted from Johnsonbaugh & Schaefer 2003.
+    public void getConnectedNodes(boolean[] visited, int startId, DisjointSet set)
     {
         visited[startId] = true;
         Node curNode     = nodes[startId];
-        System.out.println(curNode.name);
         
         for(Node adjNode : curNode.adjNodes)
         {
             int vertexId = adjNode.id;
             if(!visited[vertexId])
             {
-                depthFirstRecurse(visited, vertexId);
+                set.union(startId, vertexId);
+                getConnectedNodes(visited, vertexId, set);
             }
         }
     }
     
-    // depth first traversal driver method
-    public void depthFirst(int startId)
-    {
-        boolean[] visited = new boolean[nodes.length];
-        depthFirstRecurse(visited, startId);
-    }
-    
     // returns the shortest path in an unweighted graph
+    // modification of breadth first traversal
     public void unweightedPath(int[] dist, int[] prev, int startId)
     {
         int         n = nodes.length;
@@ -133,7 +129,7 @@ public class Graph
         // initialize length's and previous
         for(int i = 0; i < n; i++)
         {
-            dist[i] = Integer.MAX_VALUE;
+            dist[i] = Integer.MAX_VALUE;    // infinity
             prev[i] = -1;
         }
         
@@ -141,6 +137,7 @@ public class Graph
         dist[startId]  = 0;
         q.add(startNode);
         
+        // loop over connected nodes
         while(!q.isEmpty())
         {
             Node curNode = q.poll();
@@ -166,16 +163,14 @@ public class Graph
         
         while(prev[tmp] != -1)
         {
-            path = " -> " + getNode(tmp).name + path;
-            cost = cost + dist[tmp];
+            path = " to " + getNode(tmp).name + path;
             tmp  = prev[tmp];
         }
         
         path = getNode(tmp).name + path;
-        cost = cost + dist[tmp];
+        cost = dist[endId];
         System.out.printf(path + " %d\n", cost); 
-    }
-    
+    } 
 }
 
 // class for a node (vertex) of the graph
