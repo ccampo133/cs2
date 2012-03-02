@@ -6,7 +6,6 @@ import java.util.*;
 
 public class Graph
 {
-    //public HashMap map;
     public Node[] nodes;
     public LinkedList<Edge> edges;
     public int numEdges;
@@ -52,6 +51,12 @@ public class Graph
         }
         return -1;  // edge doesn't exist
     }
+    
+    // returns the node located at vertex `id`
+    public Node getNode(int id)
+    {
+        return nodes[id];
+    }
 
     // prints a representation of the graph
     public void printGraph()
@@ -68,7 +73,8 @@ public class Graph
         }
     }
     
-    public void breadthFirstSearch(int startId)
+    // breadth first traversal adapted from Johnsonbaugh & Schaefer 2003
+    public void breadthFirst(int startId)
     {
         boolean[] visited = new boolean[nodes.length];
         Queue<Node> q     = new LinkedList<Node>();
@@ -77,6 +83,7 @@ public class Graph
         q.add(startNode);
         System.out.println(startNode.name);
         
+        // loop through all connected nodes
         while(!q.isEmpty())
         {
             Node curNode = q.poll();
@@ -92,6 +99,83 @@ public class Graph
             }
         }
     }
+  
+    // depth first traversal adapted from Johnsonbaugh & Schaefer 2003
+    public void depthFirstRecurse(boolean[] visited, int startId)
+    {
+        visited[startId] = true;
+        Node curNode     = nodes[startId];
+        System.out.println(curNode.name);
+        
+        for(Node adjNode : curNode.adjNodes)
+        {
+            int vertexId = adjNode.id;
+            if(!visited[vertexId])
+            {
+                depthFirstRecurse(visited, vertexId);
+            }
+        }
+    }
+    
+    // depth first traversal driver method
+    public void depthFirst(int startId)
+    {
+        boolean[] visited = new boolean[nodes.length];
+        depthFirstRecurse(visited, startId);
+    }
+    
+    // returns the shortest path in an unweighted graph
+    public void unweightedPath(int[] dist, int[] prev, int startId)
+    {
+        int         n = nodes.length;
+        Queue<Node> q = new LinkedList<Node>();
+        
+        // initialize length's and previous
+        for(int i = 0; i < n; i++)
+        {
+            dist[i] = Integer.MAX_VALUE;
+            prev[i] = -1;
+        }
+        
+        Node startNode = nodes[startId];
+        dist[startId]  = 0;
+        q.add(startNode);
+        
+        while(!q.isEmpty())
+        {
+            Node curNode = q.poll();
+            for(Node adjNode : curNode.adjNodes)
+            {
+                int vertex = adjNode.id;
+                if(dist[vertex] == Integer.MAX_VALUE)
+                {
+                    dist[vertex] = dist[curNode.id] + getEdgeWeight(curNode.id, vertex);
+                    prev[vertex] = curNode.id;
+                    q.add(adjNode);
+                }
+            }
+        }
+    }
+    
+    // prints the path through a graph and the associated cost
+    public void printPath(int[] dist, int[] prev, int endId)
+    {
+        int cost    = 0;
+        int tmp     = endId;
+        String path = "";
+        
+        while(prev[tmp] != -1)
+        {
+            path = " -> " + getNode(tmp).name + path;
+            cost = cost + dist[tmp];
+            tmp  = prev[tmp];
+        }
+        
+        path = getNode(tmp).name + path;
+        cost = cost + dist[tmp];
+        System.out.printf(path + " %d\n", cost); 
+    }
+    
 }
 
 // class for a node (vertex) of the graph
@@ -112,17 +196,6 @@ class Node
     public void addAdjNode(Node adjNode)
     {
         adjNodes.add(adjNode);
-    }
-    
-    // print names of the adjacent nodes
-    public void printAdjNodes()
-    {
-        for(int i = 0; i < adjNodes.size(); i++)
-        {
-            Node curNode = adjNodes.get(i);
-            System.out.print(curNode.name + " ");
-        }
-        System.out.print("\n\n");
     }
 }
     

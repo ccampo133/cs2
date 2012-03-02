@@ -48,10 +48,9 @@ public class Assignment04
                 // create respective edge
                 flightMap.addEdge(city1, city2, cost, map);
             }
-            // FINDME: debug call
-            flightMap.printGraph();
             
-            System.out.printf("%d \n", flightMap.getEdgeWeight(0, 3));
+            int[] path = new int[numCities];
+            int[] cost = new int[numCities];
         }
         catch(Exception ioe)
         {
