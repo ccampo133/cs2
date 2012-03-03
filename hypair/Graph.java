@@ -112,6 +112,7 @@ public class Graph
     private Map<Node, Node> getWeightedPath(Node start, Node end)
     {
         Map<Node, Node> prev = new HashMap<Node, Node>();
+        PriorityQueue<Node> unsettledNodes = new PriorityQueue<Node>(numNodes);
         System.out.println("WEIGHTED PATH TODO");
         return prev;
     }
@@ -158,10 +159,11 @@ public class Graph
 }
 
 // class for a node (vertex) of the graph
-class Node
+class Node implements Comparable<Node>
 {
     String name;
     int id;
+    int dist = Integer.MAX_VALUE;
     LinkedList<Node> adjNodes;
        
     public Node(String name, int id)
@@ -175,6 +177,12 @@ class Node
     public void addAdjNode(Node adjNode)
     {
         adjNodes.add(adjNode);
+    }
+    
+    // for priority queue
+    public int compareTo(Node other)
+    {
+        return Integer.compare(dist, other.dist);
     }
 }
     
