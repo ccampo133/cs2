@@ -7,10 +7,10 @@ import java.util.*;
 // weighted directed graph data structure consiting of nodes and edges.
 public class Graph
 {
-    public Node[] nodes;
-    public LinkedList<Edge> edges;
-    public int numEdges;
-    public int numNodes;
+    Node[] nodes;
+    LinkedList<Edge> edges;
+    int numEdges;
+    int numNodes;
     
     // create empty graph
     public Graph(int n)
@@ -23,6 +23,9 @@ public class Graph
     
     // adds a new node to the graph
     public void addNode(String name, int id){ nodes[id] = new Node(name, id); }
+    
+    // returns the node located at vertex `id`.
+    public Node getNode(int id){ return nodes[id]; }
     
     // adds an edge to the graph
     public void addEdge(String src, String dest, int weight, HashMap<String, Integer> map)
@@ -41,66 +44,19 @@ public class Graph
     
     // returns weight associated with the queried edge
     // weight(u, v) in the textbook.
-    public int getEdgeWeight(int idSrc, int idDest)
+    public int getEdgeWeight(Node src, Node dest)
     {
         for(Edge edge : edges)
         {
-            if(edge.src.id == idSrc && edge.dest.id == idDest)
+            if(edge.src == src && edge.dest == dest)
             { 
                 return edge.weight;
             }
         }
-        return -1;  // edge doesn't exist
+        // edge doesn't exist
+        throw new RuntimeException("No edge between " + src.name + " and " + dest.name);
     }
     
-    // returns the node located at vertex `id`.
-    public Node getNode(int id)
-    {
-        return nodes[id];
-    }
-
-    // prints a representation of the graph.
-    public void printGraph()
-    {
-        for(int i = 0; i < numNodes; i++)
-        {
-            Node curNode = nodes[i];
-            System.out.print(curNode.name + ": adjacent to...\n");
-            for(int j = 0; j < curNode.adjNodes.size(); j++)
-            {
-                System.out.print(curNode.adjNodes.get(j).name + "  ");
-            }
-            System.out.println("\n");
-        }
-    }
-    
-    // breadth first traversal adapted from Johnsonbaugh & Schaefer 2003.
-    public void breadthFirst(int startId)
-    {
-        boolean[] visited = new boolean[nodes.length];
-        Queue<Node> q     = new LinkedList<Node>();
-        Node startNode    = nodes[startId];
-        visited[startId]  = true;
-        q.add(startNode);
-        System.out.println(startNode.name);
-        
-        // loop through all connected nodes
-        while(!q.isEmpty())
-        {
-            Node curNode = q.poll();
-            for(Node adjNode : curNode.adjNodes)
-            {
-                int vertexId = adjNode.id;
-                if(!visited[vertexId])
-                {
-                    visited[vertexId] = true;
-                    q.add(adjNode);
-                    System.out.println(adjNode.name);
-                }
-            }
-        }
-    }
-  
     // keeps track of connected nodes via a disjoint set.
     // modded depth first traversal adapted from Johnsonbaugh & Schaefer 2003.
     public void getConnectedNodes(boolean[] visited, int startId, DisjointSet set)
@@ -121,64 +77,92 @@ public class Graph
     
     // returns the shortest path in an unweighted graph
     // modification of breadth first traversal
-    public void unweightedPath(int[] dist, int[] prev, int startId)
+    private Map<Node, Node> getUWPath(Node start, Node end)
     {
-        int         n = nodes.length;
-        Queue<Node> q = new LinkedList<Node>();
+        Map<Node, Node>  prev  = new HashMap<Node, Node>();
+        Queue<Node>      queue = new LinkedList<Node>();
+        Set<Node>        visit = new HashSet<Node>(); // keep track of visited nodes
         
-        // initialize length's and previous
-        for(int i = 0; i < n; i++)
-        {
-            dist[i] = Integer.MAX_VALUE;    // infinity
-            prev[i] = -1;
-        }
-        
-        Node startNode = nodes[startId];
-        dist[startId]  = 0;
-        q.add(startNode);
+        // initialize the search
+        Node current = start;
+        queue.add(current);
+        visit.add(current);
         
         // loop over connected nodes
-        while(!q.isEmpty())
+        while(!queue.isEmpty())
         {
-            Node curNode = q.poll();
-            for(Node adjNode : curNode.adjNodes)
+            current = queue.poll();
+            // terminate if destination is reached
+            if(current.equals(end)){ break; }
+            // loop over adjacent nodes
+            for(Node adjNode : current.adjNodes)
             {
-                int vertex = adjNode.id;
-                if(dist[vertex] == Integer.MAX_VALUE)
+                if(!visit.contains(adjNode))
                 {
-                    dist[vertex] = dist[curNode.id] + getEdgeWeight(curNode.id, vertex);
-                    prev[vertex] = curNode.id;
-                    q.add(adjNode);
+                    queue.add(adjNode);
+                    visit.add(adjNode);
+                    prev.put(adjNode, current);
                 }
             }
         }
+        return prev;
     }
     
-    // prints the path through a graph and the associated cost
-    public void printPath(int[] dist, int[] prev, int endId)
+    // returns the shortest path in a weighted graph.
+    private Map<Node, Node> getWeightedPath(Node start, Node end)
     {
-        int cost    = 0;
-        int tmp     = endId;
-        String path = "";
+        Map<Node, Node> prev = new HashMap<Node, Node>();
+        System.out.println("WEIGHTED PATH TODO");
+        return prev;
+    }
+    
+    // prints the path between two specified node (vertex) ids.
+    // can specifiy weighted or unweighted path
+    public void printPath(int startId, int endId, String pathType)
+    {
+        // get the path and distance
+        Node start = getNode(startId);
+        Node end   = getNode(endId);
+        int  dist  = 0;
         
-        while(prev[tmp] != -1)
+        // get path type
+        Map<Node, Node> prev;
+        if(pathType == "unweighted")
         {
-            path = " to " + getNode(tmp).name + path;
-            tmp  = prev[tmp];
+            prev = getUWPath(start, end);
+        }
+        else if(pathType == "weighted")
+        {
+            prev = getWeightedPath(start, end);
+            // FINDME: update code
+            System.out.println();
+            return;
+        }
+        else
+        {
+            throw new RuntimeException("Invaild path type.  Either weighted or unweighted");
         }
         
-        path = getNode(tmp).name + path;
-        cost = dist[endId];
-        System.out.printf(path + " %d\n", cost); 
-    } 
+        // print the path
+        String path  = "";
+        Node   tmp   = end;
+        while(prev.get(tmp) != prev.get(start))
+        {
+            dist += getEdgeWeight(prev.get(tmp), tmp);
+            path  = " to " + tmp.name + path;
+            tmp   = prev.get(tmp);
+        }
+        path = tmp.name + path;
+        System.out.printf(path + " %d\n", dist);
+    }
 }
 
 // class for a node (vertex) of the graph
 class Node
 {
-    public String name;
+    String name;
     int id;
-    public LinkedList<Node> adjNodes;
+    LinkedList<Node> adjNodes;
        
     public Node(String name, int id)
     {

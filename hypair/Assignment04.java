@@ -62,7 +62,7 @@ public class Assignment04
             boolean[] seen  = new boolean[numCities];
             for(int i = 0; i < numCities; i++)
             {
-                if(!seen[i]){ flightMap.depthFirst(seen, i, set); }
+                if(!seen[i]){ flightMap.getConnectedNodes(seen, i, set); }
             }
             
             // check queries
@@ -74,18 +74,14 @@ public class Assignment04
                 
                 // check if there is a path in O(lg n) time
                 if(set.findset(map.get(city1)) == set.findset(map.get(city2)))
-                {
-                    int[] cost = new int[numCities];
-                    int[] path = new int[numCities];
-                    
+                {                    
                     // get minimum hop flight
                     System.out.print("Minimum Hop Flight: ");
-                    flightMap.unweightedPath(cost, path, map.get(city1));
-                    flightMap.printPath(cost, path, map.get(city2));
+                    flightMap.printPath(map.get(city1), map.get(city2), "unweighted");
                     
                     // get minimum cost flight
                     System.out.print("Minimum Cost Flight: ");
-                    System.out.println("TODO\n"); // FINDME: code this part
+                    flightMap.printPath(map.get(city1), map.get(city2), "weighted");
                 }
                 else{ System.out.println("No path\n"); }
             }
