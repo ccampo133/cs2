@@ -216,10 +216,10 @@ public class Graph
 // class for a node (vertex) of the graph
 class Node implements Comparable<Node>
 {
+    LinkedList<Node> adjNodes;
     String name;
     int id;
     int dist;   // used in shortest weighted path
-    LinkedList<Node> adjNodes;
        
     public Node(String name, int id)
     {
