@@ -10,7 +10,6 @@ public class Assignment04
 {
     public static void main(String[] args)
     {
-        // read data file
         try
         {
             HashMap<String, Integer> map = new HashMap<String, Integer>();
@@ -22,7 +21,7 @@ public class Assignment04
             // init graph
             Graph flightMap = new Graph(numCities);
             
-            // gather flight information
+            // read input and gather flight information
             int idSoFar = 0;
             for(int i = 0; i < numFlights; i++)
             {
@@ -46,34 +45,21 @@ public class Assignment04
                 }
             
                 // create respective edge
-                flightMap.addEdge(city1, city2, cost, map);
+                flightMap.addEdge(map.get(city1), map.get(city2), cost);
             }
-                        
+            
             // use disjoint set data structure to represent connected cities
-            DisjointSet set = new DisjointSet(numCities);
-            
-            // initialize the set
-            for(int i = 0; i < numCities; i++)
-            {
-                set.makeset(flightMap.getNode(i).id);
-            }
-            
-            // find connected components
-            boolean[] seen  = new boolean[numCities];
-            for(int i = 0; i < numCities; i++)
-            {
-                if(!seen[i]){ flightMap.getConnectedNodes(seen, i, set); }
-            }
+            DisjointSet regions = flightMap.getConnectedComponents();
             
             // check queries
             while(scnr.hasNextLine())
             {
                 String city1 = scnr.next();
                 String city2 = scnr.next();
-                System.out.println(city1 + " " + city2);
+                System.out.println("QUERY: " + city1 + " to " + city2);
                 
-                // check if there is a path in O(lg n) time
-                if(set.findset(map.get(city1)) == set.findset(map.get(city2)))
+                // check if there is a path between cities
+                if(regions.findset(map.get(city1)) == regions.findset(map.get(city2)))
                 {                    
                     // get minimum hop flight
                     System.out.print("Minimum Hop Flight: ");
@@ -82,6 +68,7 @@ public class Assignment04
                     // get minimum cost flight
                     System.out.print("Minimum Cost Flight: ");
                     flightMap.printPath(map.get(city1), map.get(city2), "weighted");
+                    System.out.println("");
                 }
                 else{ System.out.println("No path\n"); }
             }

@@ -27,19 +27,43 @@ public class Graph
     // returns the node located at vertex `id`.
     public Node getNode(int id){ return nodes[id]; }
     
-    // adds an edge to the graph
-    public void addEdge(String src, String dest, int weight, HashMap<String, Integer> map)
+    // returns the node named `name`.
+    public Node getNode(String name)
     {
-        int  srcId  = map.get(src);
-        int  destId = map.get(dest);        
-        Edge edge   = new Edge(nodes[srcId], nodes[destId], weight);
+        for(Node node : nodes)
+        {
+            if(node.name == name){ return node; }
+        }
+        // node doesn't exist.
+        throw new RuntimeException("No node in graph with name `" + name + "`."); 
+    }
+    
+    // adds an edge to the graph, but referenced by vertex ids
+    public void addEdge(int srcId, int destId, int weight)
+    {
+        Node src  = getNode(srcId);
+        Node dest = getNode(destId);
+        Edge edge = new Edge(src, dest, weight);
         
         // update edge list
         edges.add(edge);
         numEdges++;
         
         // add adjacent nodes
-        nodes[srcId].addAdjNode(nodes[destId]);
+        nodes[src.id].addAdjNode(nodes[dest.id]);
+    }
+    
+    // adds an edge to the graph
+    public void addEdge(Node src, Node dest, int weight)
+    {
+        Edge edge = new Edge(src, dest, weight);
+        
+        // update edge list
+        edges.add(edge);
+        numEdges++;
+        
+        // add adjacent nodes
+        nodes[src.id].addAdjNode(nodes[dest.id]);
     }
     
     // returns weight associated with the queried edge
@@ -48,35 +72,49 @@ public class Graph
     {
         for(Edge edge : edges)
         {
-            if(edge.src == src && edge.dest == dest)
-            { 
-                return edge.weight;
-            }
+            if(edge.src == src && edge.dest == dest){ return edge.weight; }
         }
         // edge doesn't exist
         throw new RuntimeException("No edge between " + src.name + " and " + dest.name);
     }
     
+    // returns a disjoint set data structure representing the connected components of the graph.
+    public DisjointSet getConnectedComponents()
+    {
+        DisjointSet connComps = new DisjointSet(numNodes);
+        boolean[]     visited = new boolean[numNodes];
+        
+        // initialize the set
+        for(int i = 0; i < numNodes; i++){ connComps.makeset(getNode(i).id); }
+        // find connected components
+        for(int i = 0; i < numNodes; i++)
+        {
+            if(!visited[i]){ findConnectedNodes(visited, i, connComps); }
+        }
+        return connComps;
+    }
+    
     // keeps track of connected nodes via a disjoint set.
-    // modded depth first traversal adapted from Johnsonbaugh & Schaefer 2003.
-    public void getConnectedNodes(boolean[] visited, int startId, DisjointSet set)
+    // modified depth first search adapted from Johnsonbaugh & Schaefer 2003.
+    private void findConnectedNodes(boolean[] visited, int startId, DisjointSet set)
     {
         visited[startId] = true;
         Node curNode     = nodes[startId];
         
+        // check unvisited adjacent nodes and recurse
         for(Node adjNode : curNode.adjNodes)
         {
             int vertexId = adjNode.id;
             if(!visited[vertexId])
             {
                 set.union(startId, vertexId);
-                getConnectedNodes(visited, vertexId, set);
+                findConnectedNodes(visited, vertexId, set);
             }
         }
     }
     
-    // returns the shortest path in an unweighted graph
-    // modification of breadth first traversal
+    // returns the shortest path in an unweighted graph.
+    // modification of breadth first search.
     private Map<Node, Node> getUWPath(Node start, Node end)
     {
         Map<Node, Node>  prev  = new HashMap<Node, Node>();
@@ -108,12 +146,42 @@ public class Graph
         return prev;
     }
     
-    // returns the shortest path in a weighted graph.
+    // returns the shortest path in a weighted graph between two nodes.
+    // modified version of Dijkstra's algorithm.
     private Map<Node, Node> getWeightedPath(Node start, Node end)
     {
-        Map<Node, Node> prev = new HashMap<Node, Node>();
-        PriorityQueue<Node> unsettledNodes = new PriorityQueue<Node>(numNodes);
-        System.out.println("WEIGHTED PATH TODO");
+        Map<Node, Node>     prev  = new HashMap<Node, Node>();
+        PriorityQueue<Node> heap  = new PriorityQueue<Node>(numNodes);
+        Set<Node>           visit = new HashSet<Node>();
+        
+        // set all distances to infinity
+        for(Node node : nodes){ node.dist = Integer.MAX_VALUE; }
+        
+        // initialize algorithm
+        Node current = start;
+        current.dist = 0;
+        heap.add(current);
+        
+        // main loop over connected nodes
+        while(!heap.isEmpty())
+        {
+            current = heap.poll(); // get the node with minimum distance
+            visit.add(current);
+            // terminate if destination is reached
+            if(current.equals(end)){ break; }
+            // loop over adjacent nodes
+            for(Node adjNode : current.adjNodes)
+            {
+                int dist = current.dist + getEdgeWeight(current, adjNode);
+                // found shorter distance
+                if(!visit.contains(adjNode) && dist < adjNode.dist)
+                {
+                    adjNode.dist = dist;
+                    prev.put(adjNode, current);
+                    heap.add(adjNode);
+                }
+            }
+        }
         return prev;
     }
     
@@ -128,23 +196,10 @@ public class Graph
         
         // get path type
         Map<Node, Node> prev;
-        if(pathType == "unweighted")
-        {
-            prev = getUWPath(start, end);
-        }
-        else if(pathType == "weighted")
-        {
-            prev = getWeightedPath(start, end);
-            // FINDME: update code
-            System.out.println();
-            return;
-        }
-        else
-        {
-            throw new RuntimeException("Invaild path type.  Either weighted or unweighted");
-        }
+        if(pathType == "unweighted"){ prev = getUWPath(start, end); }
+        else{ prev = getWeightedPath(start, end); }
         
-        // print the path
+        // print the path and the distance
         String path  = "";
         Node   tmp   = end;
         while(prev.get(tmp) != prev.get(start))
@@ -163,7 +218,7 @@ class Node implements Comparable<Node>
 {
     String name;
     int id;
-    int dist = Integer.MAX_VALUE;
+    int dist;   // used in shortest weighted path
     LinkedList<Node> adjNodes;
        
     public Node(String name, int id)
@@ -174,16 +229,10 @@ class Node implements Comparable<Node>
     }
     
     // add adjacent node to adjacency list
-    public void addAdjNode(Node adjNode)
-    {
-        adjNodes.add(adjNode);
-    }
+    public void addAdjNode(Node adjNode){ adjNodes.add(adjNode); }
     
-    // for priority queue
-    public int compareTo(Node other)
-    {
-        return Integer.compare(dist, other.dist);
-    }
+    // comparison for priority queue
+    public int compareTo(Node other){ return Integer.compare(dist, other.dist); }
 }
     
 // class for an edge on the graph

@@ -1,0 +1,29 @@
+9
+18
+Orlando Tampa HA01 09:00 0:45 90
+Tampa Orlando HA02 11:00 0:45 90
+Tampa Miami HA03 11:00 0:50 90
+Miami Tampa HA04 13:00 0:50 90
+Orlando Miami HA05 10:00 1:10 200
+Miami Orlando HA06 12:00 1:10 200
+LosAngeles SanFrancisco HA21 9:00 0:45 75
+SanFrancisco LosAngeles HA22 11:00 0:45 75
+LosAngeles SanDiego HA23 11:00 0:30 75
+SanDiego LosAngeles HA24 13:00 0:30 75
+SanFrancisco SanDiego HA25 10:00 1:10 175
+SanDiego SanFrancisco HA26 12:00 1:10 175
+Newark Chicago HA41 09:00 0:30 50
+Chicago Newark HA42 11:00 0:30 50
+Philadelphia Newark HA43 11:00 0:50 50
+Newark Philadelphia HA44 13:00 0:50 50
+Chicago Philadelphia HA45 10:00 1:10 120
+Philadelphia Chicago HA46 12:00 1:10 120
+Orlando SanDiego
+Orlando Miami
+Orlando Tampa
+Orlando Chicago
+Chicago LosAngeles
+Chicago Newark
+Newark Philadelphia
+SanFrancisco SanDiego
+SanDiego LosAngeles
