@@ -12,14 +12,16 @@ public class Assignment04
     {
         try
         {
-            HashMap<String, Integer> map = new HashMap<String, Integer>();
-            String  fname  = "Assignment04.txt";
-            Scanner scnr   = new Scanner(new File(fname));
+            String    fname = "Assignment04.txt";
+            Scanner   scnr  = new Scanner(new File(fname));
+            
+            // read initial data from file
             int numCities  = scnr.nextInt();
             int numFlights = scnr.nextInt();
             
-            // init graph
-            Graph flightMap = new Graph(numCities);
+            // init graph and hash map
+            Graph     flightMap = new Graph(numCities);
+            HashTable map       = new HashTable(numCities);
             
             // read input and gather flight information
             int idSoFar = 0;
@@ -31,13 +33,13 @@ public class Assignment04
                 int cost = scnr.nextInt();
                 
                 // assign vertices
-                if(map.get(city1) == null)
+                if(map.get(city1) == -1)
                 {
                     map.put(city1, idSoFar);
                     flightMap.addNode(city1, idSoFar);
                     idSoFar++;
                 }
-                if(map.get(city2) == null)
+                if(map.get(city2) == -1)
                 {
                     map.put(city2, idSoFar);
                     flightMap.addNode(city2, idSoFar);
