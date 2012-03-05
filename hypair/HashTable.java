@@ -13,20 +13,6 @@ public class HashTable
         bucket = new Entry[size];
     }
     
-    // hash function
-    public int hashFunc(String key) 
-    { 
-        int hashVal = 0;
-        for(int i = 0; i < key.length(); i++)
-        {
-            hashVal = 37 * hashVal + key.charAt(i);
-        }
-        
-        hashVal %= size;
-        if(hashVal < 0){ hashVal += size; }
-        return hashVal;
-    }
-    
     // add an entry to the table
     public void put(String key, int val)
     {
@@ -60,6 +46,20 @@ public class HashTable
             }
             return bucket[hash].val;
         }
+    }
+    
+    // hash function
+    private int hashFunc(String key) 
+    { 
+        int hashVal = 0;
+        for(int i = 0; i < key.length(); i++)
+        {
+            hashVal = 37 * hashVal + key.charAt(i);
+        }
+        
+        hashVal %= size;
+        if(hashVal < 0){ hashVal += size; }
+        return hashVal;
     }
 }
 
