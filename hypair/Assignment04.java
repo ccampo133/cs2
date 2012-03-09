@@ -54,7 +54,7 @@ public class Assignment04
             DisjointSet regions = flightMap.getConnectedComponents();
             
             // check queries
-            while(scnr.hasNextLine())
+            while(scnr.hasNextLine() && scnr.hasNext())
             {
                 String city1 = scnr.next();
                 String city2 = scnr.next();

@@ -164,7 +164,7 @@ public class Graph
         
         // main loop over connected nodes
         while(!heap.isEmpty())
-        {
+        {            
             current = heap.poll(); // get the node with minimum distance
             visit.add(current);
             // terminate if destination is reached
@@ -178,6 +178,8 @@ public class Graph
                 {
                     adjNode.dist = dist;
                     prev.put(adjNode, current);
+                    // decrease distance of current node in the heap
+                    heap.remove(adjNode);
                     heap.add(adjNode);
                 }
             }
@@ -210,6 +212,20 @@ public class Graph
         }
         path = tmp.name + path;
         System.out.printf(path + " %d\n", dist);
+    }
+    
+    public void printGraph()
+    {
+        for(Node node : nodes)
+        {
+            System.out.print("NODE: " + node.name + "\n");
+            System.out.println("Adjacent to:");
+            for(Node adj : node.adjNodes)
+            {
+                System.out.println(adj.name);
+            }
+            System.out.println();
+        }
     }
 }
 
