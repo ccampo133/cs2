@@ -214,6 +214,8 @@ public class Graph
         System.out.printf(path + " %d\n", dist);
     }
     
+    // prints an adjacency list representation of the graph.
+    // useful for debugging.
     public void printGraph()
     {
         for(Node node : nodes)
