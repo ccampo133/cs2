@@ -42,5 +42,8 @@ HW4 (2/23/2012) - Hypothetical Airline System
  * standard library. The code is therefore useful for demonstrating 
  * implementations of these concepts in Java. 
 
+HW 5 (3/30/2012) - Text Processing Algorithms
+ text_process/
+ * Demonstrates multiple text processing algorithms.
 
 
