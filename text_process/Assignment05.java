@@ -29,7 +29,8 @@ public class Assignment05
         System.out.println("\nKMP SEARCH:\n===========");
         kmpSearch(text, pattern);
         
-       // boyerMooreSearch(text, pattern, 215);
+        System.out.println("\nBOYER MOORE SEARCH:\n===================");
+        boyerMooreSearch(text, pattern);
     }
     
     // return all the text information as a string
@@ -55,7 +56,8 @@ public class Assignment05
     /*********************
      * SEARCH ALGORITHMS *
      *********************/
-     
+    
+    // simple brute force text search algorithm
     // finds all occurances of pattern in text.
     public static void bruteForceSearch(String text, String pattern)
     {
@@ -168,12 +170,23 @@ public class Assignment05
     }
     
     // boyer-moore algorithm
-    public static int boyerMooreSearch(String text, String pattern)
+    public static void boyerMooreSearch(String text, String pattern)
     {
-        int[] last = lastOccuranceFunc(pattern);
+        int i = -1;
+        do
+        {
+            i = boyerMooreSearch(text, pattern, i+1);
+        }while(i != -1);
+    }
+    
+    public static int boyerMooreSearch(String text, String pattern, int start)
+    {
+        Map<Character, Integer> last = lastOccuranceFunc(pattern);
         int cmp = 0;
-        int i = pattern.length() - 1;
-        int j = pattern.length() - 1;
+        int   i = start + pattern.length() - 1;
+        int   j = pattern.length() - 1;
+        
+        // loop over entire text
         while(i <= text.length() - 1)
         {
             cmp++;
@@ -181,7 +194,7 @@ public class Assignment05
             {
                 if(j == 0)
                 {
-                    System.out.println(cmp);
+                    System.out.printf("PATTERN FOUND AT INDEX %4d AFTER %4d COMPARISONS.\n", i, cmp);
                     return i; // match at i
                 }
                 else
@@ -190,27 +203,29 @@ public class Assignment05
                     j--;
                 }
             }
-            else
+            else    // character jump
             {
-                int l = last[text.charAt(i)];
+                int l = -1;
+                if(last.get(text.charAt(i)) != null)
+                    l = last.get(text.charAt(i));
                 i = i + pattern.length() - Math.min(j, 1+l);
                 j = pattern.length() - 1;
             }
         }
-        return -1;
+        return -1;  // no match
     }
     
     // last occurance function
-    public static int[] lastOccuranceFunc(String pattern)
+    public static Map<Character, Integer> lastOccuranceFunc(String pattern)
     {
-        int N = 256;
-        int[] last = new int[N];
-        
-        // initialize to -1 and create map
-        for(int i = 0; i < N; i++)
-            last[i] = -1;
-        for(int i = 0; i < pattern.length(); i++)
-            last[pattern.charAt(i)] = i;
-        return last;
+        Map<Character, Integer> map = new HashMap<Character, Integer>();
+        // find rightmost occurance of letter; map to integers
+        for(int i = pattern.length()-1; i >= 0; i--)
+        {
+            char c = pattern.charAt(i);
+            if(!map.containsKey(c))
+                map.put(c, i);
+        }
+        return map;
     }
 }
