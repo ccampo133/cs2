@@ -29,8 +29,13 @@ public class Assignment05
         System.out.println("\nKMP SEARCH:\n===========");
         kmpSearch(text, pattern);
         
-        System.out.println("\nBOYER MOORE SEARCH:\n===================");
+        System.out.println("\nBOYER-MOORE SEARCH:\n===================");
         boyerMooreSearch(text, pattern);
+                
+        // print frequencies
+        System.out.println("\nFREQUENCY LISTING:\n==================");
+        printFreqListing(text);
+            
     }
     
     // return all the text information as a string
@@ -53,11 +58,11 @@ public class Assignment05
         return null;
     }
     
-    /*********************
-     * SEARCH ALGORITHMS *
-     *********************/
+    /**************************
+     * TEXT SEARCH ALGORITHMS *
+     **************************/
     
-    // simple brute force text search algorithm
+    // simple brute force text search algorithm.
     // finds all occurances of pattern in text.
     public static void bruteForceSearch(String text, String pattern)
     {
@@ -71,19 +76,17 @@ public class Assignment05
     // returns first occurance of pattern starting at index start.
      public static int bruteForceSearch(String text, String pattern, int start)
      {
-        int m   = pattern.length();
-        int n   = text.length();
         int i   = start;
         int cmp = 0;
-        while(i <= n-m)
+        while(i <= text.length() - pattern.length())
         {
             int j = 0;
-            while(j < m && text.charAt(i+j) == pattern.charAt(j))
+            while(j < pattern.length() && text.charAt(i+j) == pattern.charAt(j))
             {
                 cmp++; 
                 j++;
             }
-            if(j == m)
+            if(j == pattern.length())
             {
                 System.out.printf("PATTERN FOUND AT INDEX %4d AFTER %4d COMPARISONS.\n", i, cmp);
                 return i; 
@@ -94,7 +97,7 @@ public class Assignment05
         return -1; // no match
      }
      
-    // KMP algorithm    
+    // knuth-morris-pratt algorithm    
     // finds all occurances of pattern in the text, rather than the first 
     // occurance since some start index.
     public static void kmpSearch(String text, String pattern)
@@ -206,7 +209,7 @@ public class Assignment05
             else    // character jump
             {
                 int l = -1;
-                if(last.get(text.charAt(i)) != null)
+                if(last.containsKey(text.charAt(i)))
                     l = last.get(text.charAt(i));
                 i = i + pattern.length() - Math.min(j, 1+l);
                 j = pattern.length() - 1;
@@ -228,4 +231,75 @@ public class Assignment05
         }
         return map;
     }
+    
+    /*******************************
+     * HUFFMAN ENCODING ALGORITHMS *
+     *******************************/
+     
+     // node class for huffman encoding tree
+     public static class Node implements Comparable<Node>
+     {
+        private final char ch;
+        private final int freq;
+        private final Node left, right;
+        
+        Node(char ch, int freq, Node left, Node right)
+        {
+            this.ch    = ch;
+            this.freq  = freq;
+            this.left  = left;
+            this.right = right;
+        }
+        
+        public int compareTo(Node other){ return Integer.compare(this.freq, other.freq); }
+     }
+     
+     // compute character frequencies in the text
+     public static Map<Character, Integer> getCharFreqs(String text)
+     {
+        Map<Character, Integer> freqs = new HashMap<Character, Integer>();
+        for(char c : text.toCharArray())
+        {
+            int freq = 0;
+            if(freqs.containsKey(c))
+                freq = freqs.get(c);
+            freqs.put(c, freq+1);   // increment by one for each new appearance
+        }   
+        return freqs;
+     }
+     
+     // builds huffman code tree
+     public static Node buildHuffmanTree(String text)
+     {
+        Map<Character, Integer> freqs = getCharFreqs(text);
+        PriorityQueue<Node>     heap  = new PriorityQueue<Node>();
+        
+        // create min heap with nodes for each character
+        for(char c : freqs.keySet())
+            heap.add(new Node(c, freqs.get(c), null, null));
+        
+        // create optimal tree
+        while(heap.size() > 1)
+        {
+            Node right  = heap.poll();
+            Node left   = heap.poll();
+            Node parent = new Node('\0', left.freq + right.freq, left, right);
+            heap.add(parent);
+        }
+        return heap.poll();
+     }
+     
+     // prints the frequency listing
+     public static void printFreqListing(String text)
+     {
+        Map<Character, Integer> freqs = getCharFreqs(text);
+        int tot = 0;
+        for(char c : freqs.keySet())
+        {
+            int freq = freqs.get(c);
+            System.out.printf("%c: %d\n", c, freq);
+            tot += freq;
+        }
+        System.out.printf("Total Frequency: %d\n", tot);
+     }
 }
