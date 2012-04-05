@@ -308,26 +308,22 @@ public class Assignment05
         // get optimal coding tree
         Node root = buildHuffmanTree(freqs);
 
-        // traverse tree and decode
+        // traverse tree and decode, starting at the root
         String decoded = "";
         Node   curNode = root;
         for(char c : encoded.toCharArray())
         {
-            if(curNode.isLeaf())
-            {
-                decoded += curNode.ch;
-                curNode  = root;
-            }
             // 1 goes left, 0 goes right
             if(c == '1')
                 curNode = curNode.left;
             else
                 curNode = curNode.right;
+            if(curNode.isLeaf())
+            {
+                decoded += curNode.ch;
+                curNode  = root;
+            }
         }
-        
-        // check if the last node is a leaf
-        if(curNode.isLeaf())
-            decoded += curNode.ch;
         return decoded;
     }
      
