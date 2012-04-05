@@ -23,7 +23,7 @@ public class Assignment05
         String pattern = scnr.nextLine();
         
         // run search algorithms        
-        System.out.println("\nBRUTE FORCE SEARCH:\n===========");
+        System.out.println("\nBRUTE FORCE SEARCH:\n===================");
         bruteForceSearch(text, pattern);
         
         System.out.println("\nKMP SEARCH:\n===========");
@@ -31,15 +31,30 @@ public class Assignment05
         
         System.out.println("\nBOYER-MOORE SEARCH:\n===================");
         boyerMooreSearch(text, pattern);
-                
-        // print frequencies
-        System.out.println("\nFREQUENCY LISTING:\n==================");
-        printFreqListing(text);
+        
+        // print character frequencies
+        System.out.println("\nCHARACTER FREQUENCY LISTING:\n============================");
+        Map<Character, Integer> freqs = getCharFreqs(text);
+        int tot = 0;
+        for(char c : freqs.keySet())
+        {
+            String s = Character.toString(c); // for formatting
+            if(c == '\n') s = "\\n";
+            int freq = freqs.get(c);
+            System.out.printf("%s: %d\n", s, freq);
+            tot += freq;
+        }
+        System.out.printf("Total Frequency: %d\n", tot);
         
         // encode the text
         System.out.println("\nENCODED TEXT:\n=============");
-        huffmanCompress(text);
-            
+        String encoded = huffmanEncode(text);
+        System.out.println(encoded);
+        
+        // decode the text
+        System.out.println("\nDECODED TEXT:\n=============");
+        String decoded = huffmanDecode(encoded, freqs);
+        System.out.println(decoded);        
     }
     
     // return all the text information as a string
@@ -73,13 +88,13 @@ public class Assignment05
         int i = -1;
         do
         {
-            i = bruteForceSearch(text, pattern, i+1); 
+            i = bruteForceSearch(text, pattern, i+1);
         }while(i != -1);
     }
      
     // returns first occurance of pattern starting at index start.
-     public static int bruteForceSearch(String text, String pattern, int start)
-     {
+    public static int bruteForceSearch(String text, String pattern, int start)
+    {
         int i   = start;
         int cmp = 0;
         while(i <= text.length() - pattern.length())
@@ -99,7 +114,7 @@ public class Assignment05
             i++;
         }
         return -1; // no match
-     }
+    }
      
     // knuth-morris-pratt algorithm    
     // finds all occurances of pattern in the text, rather than the first 
@@ -176,7 +191,7 @@ public class Assignment05
         return F;
     }
     
-    // boyer-moore algorithm
+    // boyer-moore algorithm for multiple occurances
     public static void boyerMooreSearch(String text, String pattern)
     {
         int i = -1;
@@ -186,6 +201,7 @@ public class Assignment05
         }while(i != -1);
     }
     
+    // boyer-moore text searching algorithm
     public static int boyerMooreSearch(String text, String pattern, int start)
     {
         Map<Character, Integer> last = lastOccuranceFunc(pattern);
@@ -239,11 +255,38 @@ public class Assignment05
     /*******************************
      * HUFFMAN ENCODING ALGORITHMS *
      *******************************/
+    // node class for huffman encoding tree
+    public static class Node implements Comparable<Node>
+    {
+        private final char ch;
+        private final int freq;
+        private final Node left, right;
+       
+        Node(char ch, int freq, Node left, Node right)
+        {
+            this.ch    = ch;
+            this.freq  = freq;
+            this.left  = left;
+            this.right = right;
+        }
+       
+        // returns true if the node is a leaf node; false otherwise
+        public boolean isLeaf()
+        {
+            return (this.left == null && this.right == null);
+        }
+       
+        // used for priority queue comparison
+        public int compareTo(Node other)
+        { 
+            return Integer.compare(this.freq, other.freq);
+        }
+    }
      
     // encodes some text using the huffman encoding algorithm, and then 
-    // prints the encoded text to stdout.
-     public static void huffmanCompress(String text)
-     {
+    // returns the encoded text as a string.
+    public static String huffmanEncode(String text)
+    {
         // get character frequency and optimal coding tree
         Map<Character, Integer> freqs = getCharFreqs(text);
         Node root = buildHuffmanTree(freqs);
@@ -253,42 +296,44 @@ public class Assignment05
         genHuffmanCode(codes, root, "");
         
         // output huffman code for each character of the text
+        String encoded = "";
         for(char c : text.toCharArray())
-            System.out.print(codes.get(c));
-     }
+            encoded += codes.get(c);
+        return encoded;
+    }
      
-     
-     // node class for huffman encoding tree
-     public static class Node implements Comparable<Node>
-     {
-        private final char ch;
-        private final int freq;
-        private final Node left, right;
-        
-        Node(char ch, int freq, Node left, Node right)
+    // decodes huffman encoded text. inverse of huffmanEncode
+    public static String huffmanDecode(String encoded, Map<Character, Integer> freqs)
+    {
+        // get optimal coding tree
+        Node root = buildHuffmanTree(freqs);
+
+        // traverse tree and decode
+        String decoded = "";
+        Node   curNode = root;
+        for(char c : encoded.toCharArray())
         {
-            this.ch    = ch;
-            this.freq  = freq;
-            this.left  = left;
-            this.right = right;
+            if(curNode.isLeaf())
+            {
+                decoded += curNode.ch;
+                curNode  = root;
+            }
+            // 1 goes left, 0 goes right
+            if(c == '1')
+                curNode = curNode.left;
+            else
+                curNode = curNode.right;
         }
         
-        // returns true if the node is a leaf node; false otherwise
-        public boolean isLeaf()
-        {
-            return (this.left == null && this.right == null);
-        }
-        
-        // used for priority queue
-        public int compareTo(Node other)
-        { 
-            return Integer.compare(this.freq, other.freq);
-        }
-     }
+        // check if the last node is a leaf
+        if(curNode.isLeaf())
+            decoded += curNode.ch;
+        return decoded;
+    }
      
-     // compute character frequencies in the text
-     public static Map<Character, Integer> getCharFreqs(String text)
-     {
+    // compute character frequencies in the text
+    public static Map<Character, Integer> getCharFreqs(String text)
+    {
         Map<Character, Integer> freqs = new HashMap<Character, Integer>();
         for(char c : text.toCharArray())
         {
@@ -298,11 +343,11 @@ public class Assignment05
             freqs.put(c, freq+1);   // increment by one for each new appearance
         }   
         return freqs;
-     }
+    }
      
-     // builds optimal huffman coding tree
-     public static Node buildHuffmanTree(Map<Character, Integer> freqs)
-     {
+    // builds optimal huffman coding tree
+    public static Node buildHuffmanTree(Map<Character, Integer> freqs)
+    {
         PriorityQueue<Node> heap = new PriorityQueue<Node>();
         
         // create min heap with nodes for each character
@@ -318,11 +363,11 @@ public class Assignment05
             heap.add(parent);
         }
         return heap.poll();
-     }
+    }
      
-     // generate the huffman code for the characters
-     public static void genHuffmanCode(Map<Character, String> codes, Node node, String code)
-     {
+    // generate the huffman code for the characters
+    public static void genHuffmanCode(Map<Character, String> codes, Node node, String code)
+    {
         if(!node.isLeaf())
         {
             // traverse and increment left code by 1, right code by 0
@@ -331,19 +376,5 @@ public class Assignment05
         }
         else
             codes.put(node.ch, code);
-     }
-     
-     // prints the frequency listing
-     public static void printFreqListing(String text)
-     {
-        Map<Character, Integer> freqs = getCharFreqs(text);
-        int tot = 0;
-        for(char c : freqs.keySet())
-        {
-            int freq = freqs.get(c);
-            System.out.printf("%c: %d\n", c, freq);
-            tot += freq;
-        }
-        System.out.printf("Total Frequency: %d\n", tot);
-     }
+    }
 }
