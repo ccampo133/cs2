@@ -44,6 +44,8 @@ HW4 (2/23/2012) - Hypothetical Airline System
 
 HW 5 (3/30/2012) - Text Processing Algorithms
  text_process/
- * Demonstrates multiple text processing algorithms.
-
-
+ * Demonstrates multiple text processing algorithms, including text 
+ * searching, encoding, and decoding. Three text search algorithms are 
+ * demonstrated (brute force, knuth-morris-pratt, and boyer-moore). 
+ * Additionally, Huffman coding is demonstrated by encoding and decoding 
+ * some given text.
