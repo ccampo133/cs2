@@ -35,6 +35,10 @@ public class Assignment05
         // print frequencies
         System.out.println("\nFREQUENCY LISTING:\n==================");
         printFreqListing(text);
+        
+        // encode the text
+        System.out.println("\nENCODED TEXT:\n=============");
+        huffmanCompress(text);
             
     }
     
@@ -236,6 +240,24 @@ public class Assignment05
      * HUFFMAN ENCODING ALGORITHMS *
      *******************************/
      
+    // encodes some text using the huffman encoding algorithm, and then 
+    // prints the encoded text to stdout.
+     public static void huffmanCompress(String text)
+     {
+        // get character frequency and optimal coding tree
+        Map<Character, Integer> freqs = getCharFreqs(text);
+        Node root = buildHuffmanTree(freqs);
+
+        // generate huffman code for all characters
+        Map<Character, String> codes = new HashMap<Character, String>();
+        genHuffmanCode(codes, root, "");
+        
+        // output huffman code for each character of the text
+        for(char c : text.toCharArray())
+            System.out.print(codes.get(c));
+     }
+     
+     
      // node class for huffman encoding tree
      public static class Node implements Comparable<Node>
      {
@@ -251,7 +273,17 @@ public class Assignment05
             this.right = right;
         }
         
-        public int compareTo(Node other){ return Integer.compare(this.freq, other.freq); }
+        // returns true if the node is a leaf node; false otherwise
+        public boolean isLeaf()
+        {
+            return (this.left == null && this.right == null);
+        }
+        
+        // used for priority queue
+        public int compareTo(Node other)
+        { 
+            return Integer.compare(this.freq, other.freq);
+        }
      }
      
      // compute character frequencies in the text
@@ -268,11 +300,10 @@ public class Assignment05
         return freqs;
      }
      
-     // builds huffman code tree
-     public static Node buildHuffmanTree(String text)
+     // builds optimal huffman coding tree
+     public static Node buildHuffmanTree(Map<Character, Integer> freqs)
      {
-        Map<Character, Integer> freqs = getCharFreqs(text);
-        PriorityQueue<Node>     heap  = new PriorityQueue<Node>();
+        PriorityQueue<Node> heap = new PriorityQueue<Node>();
         
         // create min heap with nodes for each character
         for(char c : freqs.keySet())
@@ -287,6 +318,19 @@ public class Assignment05
             heap.add(parent);
         }
         return heap.poll();
+     }
+     
+     // generate the huffman code for the characters
+     public static void genHuffmanCode(Map<Character, String> codes, Node node, String code)
+     {
+        if(!node.isLeaf())
+        {
+            // traverse and increment left code by 1, right code by 0
+            genHuffmanCode(codes, node.left,  code + "1");
+            genHuffmanCode(codes, node.right, code + "0");
+        }
+        else
+            codes.put(node.ch, code);
      }
      
      // prints the frequency listing
