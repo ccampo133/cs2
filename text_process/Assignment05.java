@@ -46,6 +46,15 @@ public class Assignment05
         }
         System.out.printf("Total Frequency: %d\n", tot);
         
+        // list huffman codes for each character
+        System.out.println("\nHUFFMAN CODES\n=============");
+        Map<Character, String> codes = getHuffmanCodes(freqs);
+        for(char c : codes.keySet())
+        {
+            String code = codes.get(c);
+            System.out.printf("%s: %s\n", Character.toString(c), code);
+        }
+        
         // encode the text
         System.out.println("\nENCODED TEXT:\n=============");
         String encoded = huffmanEncode(text);
@@ -292,8 +301,7 @@ public class Assignment05
         Node root = buildHuffmanTree(freqs);
 
         // generate huffman code for all characters
-        Map<Character, String> codes = new HashMap<Character, String>();
-        genHuffmanCode(codes, root, "");
+        Map<Character, String> codes = getHuffmanCodes(freqs);
         
         // output huffman code for each character of the text
         String encoded = "";
@@ -361,7 +369,16 @@ public class Assignment05
         return heap.poll();
     }
      
-    // generate the huffman code for the characters
+    // generate and return the huffman code for the characters
+    public static Map<Character, String> getHuffmanCodes(Map<Character, Integer> freqs)
+    {
+        Node root = buildHuffmanTree(freqs);
+        Map<Character, String> codes = new HashMap<Character, String>();
+        genHuffmanCode(codes, root, "");
+        return codes;
+    }
+    
+    // recursive tree traversal to calculate huffman codes for characters
     public static void genHuffmanCode(Map<Character, String> codes, Node node, String code)
     {
         if(!node.isLeaf())
