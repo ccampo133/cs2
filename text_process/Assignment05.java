@@ -51,8 +51,10 @@ public class Assignment05
         Map<Character, String> codes = getHuffmanCodes(freqs);
         for(char c : codes.keySet())
         {
+            String s = Character.toString(c); // for formatting
+            if(c == '\n') s = "\\n";
             String code = codes.get(c);
-            System.out.printf("%s: %s\n", Character.toString(c), code);
+            System.out.printf("%s: %s\n", s, code);
         }
         
         // encode the text
